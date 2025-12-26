@@ -167,9 +167,8 @@ export default function SignUpUI() {
                 placeholder="DOT Number"
                 value={credentials.address}
                 onChangeText={(text) => handleChange('address', text)}
-                firstLogo
-                img={imageIndex.document} // Add appropriate icon
-                error={!!errors.address}
+                firstLogo={false}
+                 error={!!errors.address}
               />
               {renderError('address')}
 
@@ -177,9 +176,9 @@ export default function SignUpUI() {
                 placeholder="MC Number"
                 value={credentials.degree}
                 onChangeText={(text) => handleChange('degree', text)}
-                firstLogo
-                img={imageIndex.document} // Add appropriate icon
-                error={!!errors.degree}
+                                firstLogo={false}
+
+                 error={!!errors.degree}
               />
               {renderError('degree')}
 
@@ -188,11 +187,12 @@ export default function SignUpUI() {
               
               <TextInputField
                 placeholder="Company Name"
+                                firstLogo={false}
+
                 value={credentials.schoolName}
                 onChangeText={(text) => handleChange('schoolName', text)}
-                firstLogo
-                img={imageIndex.building} // Add appropriate icon
-                error={!!errors.schoolName}
+    
+                 error={!!errors.schoolName}
               />
               {renderError('schoolName')}
 

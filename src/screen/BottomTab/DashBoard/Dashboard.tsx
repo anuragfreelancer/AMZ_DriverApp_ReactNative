@@ -9,6 +9,7 @@ import {
   StatusBar,
   Image,
   ScrollView,
+  Platform,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -21,6 +22,7 @@ import {
   Pressable,
 } from 'react-native';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
+import StatusBarComponent from '../../../compoent/StatusBarCompoent';
 
 
 const DUTY_OPTIONS = [
@@ -52,17 +54,27 @@ const [selectedDuty, setSelectedDuty] = useState({
 });
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBarComponent/>
       {/* Header */}
-      <StatusBar barStyle={'light-content'}/>
-      <LinearGradient
+       <LinearGradient
         colors={[color.primary, color.primary]}
-        style={[styles.header, {paddingTop:insets.top + 10}]}>
+        style={[styles.header, { paddingTop: Platform.OS === 'android' ? insets.top + 10 : 10,
+        
+
+
+        }]}>
          
-        <View style={styles.headerRow}>
+        <View style={[styles.headerRow,{
+          marginBottom:20 ,
+          marginHorizontal:10
+        }]}>
           
           <View style={{flexDirection:'row'}}>
           <TouchableOpacity onPress={()=>navigation.dispatch(DrawerActions.openDrawer())}>
-            <Image source={imageIndex.menu} style={{height:45, width:45, marginRight:15}}/>
+            <Image source={imageIndex.menu} style={{height:45, width:45, marginRight:15}}
+            
+            resizeMode='contain'
+            />
           </TouchableOpacity>
           <View>
             <Text style={styles.welcome}>Hello, Welcome 👋</Text>
@@ -76,7 +88,7 @@ const [selectedDuty, setSelectedDuty] = useState({
           </TouchableOpacity>
         </View>
       </LinearGradient>
-<ScrollView>
+<ScrollView showsVerticalScrollIndicator={false}>
       {/* Content */}
       <View style={[styles.content,]}>
         {/* Dropdown */}
@@ -213,11 +225,9 @@ const [selectedDuty, setSelectedDuty] = useState({
         </View>
 
              <View style={[styles.redCard, { marginBottom:20}]}>
-          {/* <View style={styles.iconCircle}> */}
-            <Image source={imageIndex.multiUser} style={styles.iconCircle}/>
+             <Image source={imageIndex.multiUser} style={styles.iconCircle}/>
 
-            {/* <Icon name="person" size={22} color={color.primary}/> */}
-          {/* </View> */}
+       
           <View>
             <Text style={styles.cardLabel}>Active Drivers</Text>
             <Text style={[styles.cardTitle, {fontSize:40}]}>58</Text>
@@ -277,21 +287,20 @@ export default DashboardScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-  },
+   },
 
   header: {
-    padding: 20,
-    paddingBottom: 30,
+     paddingBottom: 30,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
-  },
+  
+     },
 
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-  },
+   },
 
   welcome: {
     color: '#fff',
