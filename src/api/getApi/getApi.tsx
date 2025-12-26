@@ -5,12 +5,12 @@ import { base_url } from "..";
 
 export const getApi = async (
   endpoint: string,
-  setLoading?: (l: boolean) => void,
+  setLoading?: any,
   token?: string,
   method?:string
 ) => {
   try {
-    setLoading && setLoading(true);
+    setLoading(true);
 
     const url = endpoint.startsWith("http")
       ? endpoint
@@ -29,18 +29,24 @@ export const getApi = async (
     console.log("📡 Fetching:", url);
 
     const response = await axios.request(config);
+        setLoading(false);
+
     return response.data;
   } catch (error: any) {
+            setLoading(false);
+
     console.error("GET API Error:", error?.response?.data || error?.message);
     return (
+              setLoading(false),
       error?.response?.data || {
         success: false,
         message: "Something went wrong",
       }
     );
   } finally {
-    setLoading && setLoading(false);
-  }
+            setLoading(false);
+
+   }
 };
 
 

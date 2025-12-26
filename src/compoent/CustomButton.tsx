@@ -18,7 +18,7 @@ import imageIndex from '../assets/imageIndex';
 type AlignType = 'left' | 'center' | 'right';
 
 interface CustomButtonProps {
-  title: string;
+  title?: string;
   txtcolor?: string;
   bgColor?: string;
   leftIcon?: React.ReactNode;
@@ -28,7 +28,7 @@ interface CustomButtonProps {
   height?: number;
   onPress?: (event: GestureResponderEvent) => void;
   disabled?: boolean;
-  button1:any
+  button1?:any
 }
 
 const CustomButton: React.FC<CustomButtonProps> = ({

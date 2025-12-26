@@ -89,7 +89,7 @@ export default function TextInputField({ ...props }) {
               maxLength={props.maxLength}
               keyboardType={props.type}
                returnKeyType='done'
-              autoFocus={props.autoFocus}
+              autoFocus={false}
               // onFocus={() => setIsFocused(true) || props.onFocus}
               // onBlur={() => setIsFocused(false)}
               editable={props.editable}

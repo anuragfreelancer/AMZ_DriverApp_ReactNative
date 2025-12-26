@@ -24,6 +24,7 @@ target 'AMZ_PRO' do
   )
 
   post_install do |installer|
+      privacy_file = "#{installer.pods_project.path}/AMZ_PRO/PrivacyInfo.xcprivacy"
     # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
     react_native_post_install(
       installer,

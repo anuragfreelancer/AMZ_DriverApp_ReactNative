@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+// SignUpUI.tsx
+import React from 'react';
 import {
   View,
   Text,
@@ -8,8 +9,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
-  Modal,
-  FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import TextInputField from '../../../compoent/TextInputField';
@@ -20,11 +19,12 @@ import StatusBarComponent from '../../../compoent/StatusBarCompoent';
 import CustomHeader from '../../../compoent/CustomHeader';
 import { useNavigation } from '@react-navigation/native';
 import ScreenNameEnum from '../../../routes/screenName.enum';
-import useSignup from './useSinup';
-import LoadingModal from '../../../utils/Loader';
+ import LoadingModal from '../../../utils/Loader';
 import { color } from '../../../constant';
+import useSignup from './useSinup';
 
 export default function SignUpUI() {
+  const navigation = useNavigation();
   const {
     credentials,
     errors,
@@ -33,21 +33,7 @@ export default function SignUpUI() {
     setTermsAccepted,
     handleChange,
     handleSignup,
-    savedRole,
   } = useSignup();
-
-  const [dropdownVisible, setDropdownVisible] = useState(false);
-  const navigation = useNavigation();
-  const educationOptions = ['High School', 'Bachelor', 'Master', 'PhD'];
-
-  const handleSelectEducation = (item: string) => {
-    handleChange('educationLevel', item);
-    setDropdownVisible(false);
-  };
-
-  const handleCriminalRecordChange = () => {
-    handleChange('criminalRecordExtract', !credentials.criminalRecordExtract);
-  };
 
   const renderError = (field: keyof typeof errors) => {
     if (errors[field]) {
@@ -55,29 +41,35 @@ export default function SignUpUI() {
     }
     return null;
   };
-// const navigation = useNavigation()
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+    <SafeAreaView style={styles.container}>
       <StatusBarComponent />
-      <CustomHeader menuIcon={imageIndex.back} leftPress={()=>navigation.goBack()}  showRight={false}/>
+      
+      <CustomHeader 
+        menuIcon={imageIndex.back} 
+        leftPress={() => navigation.goBack()}  
+        showRight={false}
+      />
+      
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        style={styles.keyboardAvoid}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
+              
+
+
         <ScrollView
           showsVerticalScrollIndicator={false}
-          style={{
-            marginHorizontal: 20,
-            marginTop: hp(3),
-            backgroundColor: "white",
-          }}
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
         >
-          {isLoading && <LoadingModal />}
-
+              <LoadingModal visible={isLoading} />
           <View style={styles.formWrapper}>
             <Image
               source={imageIndex.appLogo}
-              resizeMode='cover'
+              resizeMode='contain'
               style={styles.logo}
             />
 
@@ -97,59 +89,62 @@ export default function SignUpUI() {
             )}
 
             <View style={styles.formContainer}>
-              {/* Worker Fields */}
-               <Text style={styles.sectionTitle}>Personal Information</Text>
+              {/* Personal Information Section */}
+              <Text style={styles.sectionTitle}>Personal Information</Text>
 
-               <TextInputField
-                  placeholder="Name"
-                  value={credentials.fullName}
-                  onChangeText={(text) => handleChange('fullName', text)}
-                  firstLogo
-                  img={imageIndex.Textprofile}
-                  error={errors.fullName}
-                />
-             
-                 <TextInputField
-                    placeholder="Driver License Number"
-                    value={credentials.institutionName}
-                    onChangeText={(text) => handleChange('institutionName', text)}
-                    firstLogo
-                    img={imageIndex.driver}
-                    error={errors.institutionName}
-                  />
-                  {renderError('institutionName')}
-
-                  <TextInputField
-                    placeholder="Issued State"
-                    value={credentials.unitName}
-                    onChangeText={(text) => handleChange('unitName', text)}
-                    firstLogo
-                    img={imageIndex.global}
-                    error={errors.unitName}
-                  />
-                  {renderError('unitName')}
-
-                  <TextInputField
-                    placeholder="Languagee"
-                    value={credentials.unitManagerName}
-                    onChangeText={(text) => handleChange('unitManagerName', text)}
-                    firstLogo
-                    img={imageIndex.language}
-                    error={errors.unitManagerName}
-                  />
-                  {renderError('unitManagerName')}
-               <Text style={styles.sectionTitle}>Contact Details</Text>
-
-              {/* Common Fields */}
               <TextInputField
-                placeholder="Email"
+                placeholder="Full Name"
+                value={credentials.fullName}
+                onChangeText={(text) => handleChange('fullName', text)}
+                firstLogo
+                img={imageIndex.Textprofile}
+                error={!!errors.fullName}
+              />
+              {renderError('fullName')}
+
+              <TextInputField
+                placeholder="Driver License Number"
+                value={credentials.institutionName}
+                onChangeText={(text) => handleChange('institutionName', text)}
+                firstLogo
+                img={imageIndex.driver}
+                error={!!errors.institutionName}
+              />
+              {renderError('institutionName')}
+
+              <TextInputField
+                placeholder="Issued State"
+                value={credentials.unitName}
+                onChangeText={(text) => handleChange('unitName', text)}
+                firstLogo
+                img={imageIndex.global}
+                error={!!errors.unitName}
+              />
+              {renderError('unitName')}
+
+              <TextInputField
+                placeholder="Language"
+                value={credentials.unitManagerName}
+                onChangeText={(text) => handleChange('unitManagerName', text)}
+                firstLogo
+                img={imageIndex.language}
+                error={!!errors.unitManagerName}
+              />
+              {renderError('unitManagerName')}
+
+              {/* Contact Details Section */}
+              <Text style={styles.sectionTitle}>Contact Details</Text>
+
+              <TextInputField
+                placeholder="Email Address"
                 value={credentials.email}
                 onChangeText={(text) => handleChange('email', text)}
                 firstLogo
                 img={imageIndex.mess}
                 keyboardType="email-address"
                 autoCapitalize="none"
-                error={errors.email}
+                autoCorrect={false}
+                error={!!errors.email}
               />
               {renderError('email')}
 
@@ -160,114 +155,81 @@ export default function SignUpUI() {
                 firstLogo
                 img={imageIndex.Textphone}
                 keyboardType="phone-pad"
-                error={errors.mobile}
+                error={!!errors.mobile}
                 maxLength={15}
               />
               {renderError('mobile')}
-               <Text style={styles.sectionTitle}>FMCSA Verification</Text>
 
-
-            
-            
-           
-
-              {/* Address Field */}
+              {/* FMCSA Verification Section */}
+              <Text style={styles.sectionTitle}>FMCSA Verification</Text>
+              
               <TextInputField
                 placeholder="DOT Number"
                 value={credentials.address}
                 onChangeText={(text) => handleChange('address', text)}
-                 
-                error={errors.address} 
+                firstLogo
+                img={imageIndex.document} // Add appropriate icon
+                error={!!errors.address}
               />
               {renderError('address')}
- <TextInputField
+
+              <TextInputField
                 placeholder="MC Number"
-                value={credentials.address}
-                onChangeText={(text) => handleChange('address', text)}
-                 
-                error={errors.address} 
+                value={credentials.degree}
+                onChangeText={(text) => handleChange('degree', text)}
+                firstLogo
+                img={imageIndex.document} // Add appropriate icon
+                error={!!errors.degree}
               />
-              {/* Worker Education Section */}
-                 <Text style={styles.sectionTitle}>Company Details</Text>
+              {renderError('degree')}
 
-                  {/* Education Level Dropdown */}
-                  {/* <TouchableOpacity
-                    style={[styles.dropdown, errors.educationLevel && styles.errorBorder]}
-                    onPress={() => setDropdownVisible(true)}
-                  >
-                    <View style={styles.dropdownContent}>
-                      <Image
-                        source={imageIndex.Level}
-                        style={styles.dropdownIcon}
-                        tintColor={color.primary}
-                      />
-                      <Text style={[
-                        styles.dropdownText,
-                        !credentials.educationLevel && styles.placeholderText
-                      ]}>
-                        {credentials.educationLevel || 'Level of Education'}
-                      </Text>
-                    </View>
-                    <Image
-                      source={imageIndex.arrowqdown}
-                      style={styles.dropdownArrow}
-                      tintColor={color.primary}
-                    />
-                  </TouchableOpacity>
-                  {renderError('educationLevel')} */}
+              {/* Company Details Section */}
+              <Text style={styles.sectionTitle}>Company Details</Text>
+              
+              <TextInputField
+                placeholder="Company Name"
+                value={credentials.schoolName}
+                onChangeText={(text) => handleChange('schoolName', text)}
+                firstLogo
+                img={imageIndex.building} // Add appropriate icon
+                error={!!errors.schoolName}
+              />
+              {renderError('schoolName')}
 
-                  {/* Education Modal */}
-                  {/* <Modal
-                    visible={dropdownVisible}
-                    transparent
-                    animationType="fade"
-                  >
-                    <TouchableOpacity
-                      style={styles.modalOverlay}
-                      onPress={() => setDropdownVisible(false)}
-                    >
-                      <View style={styles.modalContent}>
-                        <FlatList
-                          data={educationOptions}
-                          keyExtractor={(item) => item}
-                          renderItem={({ item }) => (
-                            <TouchableOpacity
-                              style={styles.modalItem}
-                              onPress={() => handleSelectEducation(item)}
-                            >
-                              <Text style={styles.modalItemText}>{item}</Text>
-                            </TouchableOpacity>
-                          )}
-                        />
-                      </View>
-                    </TouchableOpacity>
-                  </Modal> */}
+              {/* Password Section */}
+              <Text style={styles.sectionTitle}>Security</Text>
+              
+              <TextInputField
+                placeholder="Password"
+                value={credentials.password}
+                onChangeText={(text) => handleChange('password', text)}
+                firstLogo
+                img={imageIndex.lock} // Add appropriate icon
+                secureTextEntry
+                error={!!errors.password}
+              />
+              {renderError('password')}
 
-                  <TextInputField
-                    placeholder="Thompson Freight Logistics"
-                    value={credentials.degree}
-                    onChangeText={(text) => handleChange('degree', text)}
-                   
-                  />
+              <TextInputField
+                placeholder="Confirm Password"
+                value={credentials.cpassword}
+                onChangeText={(text) => handleChange('cpassword', text)}
+                firstLogo
+                img={imageIndex.lock} // Add appropriate icon
+                secureTextEntry
+                error={!!errors.cpassword}
+              />
+              {renderError('cpassword')}
 
-                  <TextInputField
-                    placeholder="Authorized for Hire"
-                    value={credentials.schoolName}
-                    onChangeText={(text) => handleChange('schoolName', text)}
-                   
-                  />
-
-                 
-                  {/* Criminal Record Checkbox */}
-                 
               {/* Terms & Conditions Checkbox */}
               <TouchableOpacity
                 style={styles.checkboxContainer}
                 onPress={() => setTermsAccepted(!termsAccepted)}
+                activeOpacity={0.7}
               >
                 <View style={[
                   styles.checkboxOuter,
-                  !termsAccepted && errors.general && styles.checkboxError
+                  errors.general && styles.checkboxError
                 ]}>
                   {termsAccepted && <View style={styles.checkboxInner} />}
                 </View>
@@ -275,20 +237,21 @@ export default function SignUpUI() {
                   I agree to the Terms & Conditions
                 </Text>
               </TouchableOpacity>
+              {renderError('general')}
             </View>
 
             {/* Submit Button */}
             <CustomButton
-              title={ "Create Account" }
+              title="Create Account"
               onPress={handleSignup}
-              loading={isLoading}
-              disabled={isLoading}
-            />
+             />
           </View>
 
           <View style={styles.signUpContainer}>
             <Text style={styles.signUpText}>Already have an account? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate(ScreenNameEnum.Login as any)}>
+            <TouchableOpacity 
+              onPress={() => navigation.navigate(ScreenNameEnum.Login as never)}
+             >
               <Text style={styles.signUpLink}>Login</Text>
             </TouchableOpacity>
           </View>
@@ -299,17 +262,31 @@ export default function SignUpUI() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  keyboardAvoid: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 30,
+  },
   formWrapper: {
     backgroundColor: '#FFF',
-    marginHorizontal: 5,
+    marginHorizontal: 20,
     borderRadius: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.12,
     shadowRadius: 3.84,
     elevation: 5,
-    padding: 15,
-    marginTop: 11,
+    padding: 20,
+    marginTop: hp(2),
     marginBottom: 20,
   },
   logo: {
@@ -339,69 +316,20 @@ const styles = StyleSheet.create({
     color: "black",
     fontSize: 18,
     fontWeight: "600",
-    marginTop: 8,
-    marginBottom: 10
-  },
-  dropdown: {
-    borderWidth: 1,
-    backgroundColor: '#F7F8F8',
-    borderColor: '#F7F8F8',
-    padding: 15,
-    borderRadius: 12,
-    marginVertical: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  dropdownContent: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  dropdownIcon: {
-    height: 20,
-    width: 20,
-  },
-  dropdownText: {
-    marginLeft: 8,
-    fontSize: 16,
-  },
-  placeholderText: {
-    color: '#999',
-  },
-  dropdownArrow: {
-    tintColor: "black",
-    height: 20,
-    width: 20,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    width: '80%',
-    borderRadius: 10,
-    maxHeight: '50%',
-  },
-  modalItem: {
-    padding: 15,
-    borderBottomWidth: 1,
-    borderColor: '#eee',
-  },
-  modalItemText: {
-    fontSize: 16,
+    marginTop: 15,
+    marginBottom: 10,
+    marginLeft: 5,
   },
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     marginVertical: 15,
+    paddingHorizontal: 5,
   },
   checkboxOuter: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 22,
+    height: 22,
+    borderRadius: 4,
     borderWidth: 2,
     borderColor: color.primary,
     alignItems: 'center',
@@ -410,9 +338,9 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   checkboxInner: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
+    width: 14,
+    height: 14,
+    borderRadius: 2,
     backgroundColor: color.primary,
   },
   checkboxLabel: {
@@ -425,27 +353,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     marginBottom: 30,
+    paddingHorizontal: 20,
   },
   signUpText: {
-    fontSize: 17,
+    fontSize: 16,
     color: '#909090',
     fontWeight: '500'
   },
   signUpLink: {
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: '700',
     color: color.primary
   },
   errorText: {
     color: '#FF3B30',
     fontSize: 14,
-    marginTop: -8,
+    marginTop: -5,
     marginBottom: 10,
-    marginLeft: 5,
-  },
-  errorBorder: {
-    borderColor: '#FF3B30',
-    borderWidth: 1,
+    marginLeft: 10,
   },
   checkboxError: {
     borderColor: '#FF3B30',

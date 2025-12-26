@@ -1,142 +1,32 @@
-import { base_url } from "..";
 import { errorToast, successToast } from "../../utils/customToast";
 
-export const BaseUrl = 'http://server-php-8-3.technorizen.com/car_dealership/api/';
+export const BaseUrl = 'https://server-php-8-3.technorizen.com/amz_pro/api/auth/';
 
+interface ApiParam {
+  url: string;
+  body?: any;
+  token?: string;
+}
+
+interface ApiResponse {
+  success: boolean;
+  message?: string;
+  [key: string]: any; // For any extra fields returned by API
+}
+
+/**
+ * Generic POST API function
+ */
 export const loginApi = async (
-  param: { url: string; body?: any; token?: string },
+  param: ApiParam,
   setLoading: (loading: boolean) => void
-) => {
-  try {
-    setLoading(true);
-    const myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-
-    if (param.token) {
-      myHeaders.append('Authorization', `Bearer ${param.token}`);
-    }
-
-    const requestOptions: RequestInit = {
-      method: 'POST',
-      headers: myHeaders,
-      body: JSON.stringify(param.body),
-      redirect: 'follow',
-    };
-
-    const response = await fetch(`${BaseUrl}${param.url}`, requestOptions);
-
-    const text = await response.text();
-    let resJson;
-     try {
-      resJson = JSON.parse(text);
-    } catch {
-      resJson = { success: false, message: text };
-    }
-
-    setLoading(false);
-    return resJson;
-  } catch (error) {
-    console.error('POST API Error:', error);
-    setLoading(false);
-    return null;
-  }
-};
-
- 
- 
-export const verifyOtp = async (
-  param: { url: string; body?: any; token?: string },
-  setLoading: (loading: boolean) => void ,
- ) => {
-  try {
-    setLoading(true);
-    const myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-
-    if (param.token) {
-      myHeaders.append('Authorization', `Bearer ${param.token}`);
-    }
-
-    const requestOptions: RequestInit = {
-      method: 'POST',
-      headers: myHeaders,
-      body: JSON.stringify(param.body),
-      redirect: 'follow',
-    };
-
-    const response = await fetch(`${BaseUrl}${param.url}`, requestOptions);
-
-    const text = await response.text();
-    let resJson;
-console.log("text",text)
-    try {
-      resJson = JSON.parse(text);
-    } catch {
-      resJson = { success: false, message: text };
-    }
-
-    setLoading(false);
-    return resJson;
-  } catch (error) {
-    console.error('POST API Error:', error);
-    setLoading(false);
-    return null;
-  }
-};
-export const SecurityStepApi = async (
-  param: { url: string; body?: any; token?: string },
-  setLoading: (loading: boolean) => void ,
- ) => {
-  try {
-    setLoading(true);
-    const myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-
-    if (param.token) {
-      myHeaders.append('Authorization', `Bearer ${param.token}`);
-    }
-
-    const requestOptions: RequestInit = {
-      method: 'POST',
-      headers: myHeaders,
-      body: JSON.stringify(param.body),
-      redirect: 'follow',
-    };
-
-    const response = await fetch(`${BaseUrl}${param.url}`, requestOptions);
-
-    const text = await response.text();
-    let resJson;
-     try {
-      resJson = JSON.parse(text);
-    } catch {
-      resJson = { success: false, message: text };
-    }
-
-    setLoading(false);
-    return resJson;
-  } catch (error) {
-    console.error('POST API Error:', error);
-    setLoading(false);
-    return null;
-  }
-};
- 
-
- 
-export const SetPinApi = async (
-  param: {
-    url: string;
-    body?: any;
-    token?: string;
-  },
-  setLoading: (loading: boolean) => void
-) => {
+): Promise<ApiResponse> => {
   try {
     setLoading(true);
 
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
+    const headers = new Headers({
+      'Content-Type': 'application/json',
+    });
 
     if (param.token) {
       headers.append('Authorization', `Bearer ${param.token}`);
@@ -146,202 +36,144 @@ export const SetPinApi = async (
       method: 'POST',
       headers,
       body: JSON.stringify(param.body),
+      redirect: 'follow',
     };
 
     const response = await fetch(`${BaseUrl}${param.url}`, requestOptions);
     const text = await response.text();
 
-    let resJson;
+    let resJson: ApiResponse;
     try {
       resJson = JSON.parse(text);
     } catch {
       resJson = { success: false, message: text };
     }
 
-    setLoading(false);
     return resJson;
   } catch (error) {
     console.error('POST API Error:', error);
-    setLoading(false);
     return { success: false, message: 'Network error' };
-  }
-};
-
-
-
-
- 
- export const Privacypolicy = async (setLoading: any) => {
-  setLoading(true);
-  try {
-    const response = await fetch(`${BaseUrl}common/get_privacy_policy`, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    });
-
-    const textResponse = await response.text();
-    const parsedResponse = JSON.parse(textResponse);
-
-    console.log("parsedResponse", parsedResponse);
-
-    if (parsedResponse?.status == 1) {
-      successToast(parsedResponse?.message);
-      return parsedResponse; // ✅ Return the data
-    }  
-
-  } catch (error: any) {
-    console.error('Privacy Policy error:', error);
-    errorToast(error.message);
-    return null;
   } finally {
     setLoading(false);
   }
 };
 
-
- export  const Termsconditions = async (setLoading: any) => {
-  setLoading(true);
+/**
+ * Signup API function
+ */
+export const signupApi = async (
+  body: any,
+  setLoading: (loading: boolean) => void
+): Promise<ApiResponse> => {
   try {
-    const response = await fetch(`${BaseUrl}common/get_terms_and_condition`, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await loginApi({ url: 'signup', body }, setLoading);
 
-    const textResponse = await response.text();
-    const parsedResponse = JSON.parse(textResponse);
-
-    console.log("parsedResponse", parsedResponse);
-
-    if (parsedResponse?.status == 1) {
-      successToast(parsedResponse?.message);
-      return parsedResponse; // ✅ Return the data
-    }  
- 
-
-  } catch (error: any) {
-    console.error('Privacy Policy error:', error);
-    errorToast(error.message);
-    return null;
-  } finally {
-    setLoading(false);
-  }
-};
-
-
-export const Ask_support = async (payload: {
-  user_id: number;
-  message: string;
-}) => {
-  try {
-    const response = await fetch(`${BaseUrl}common/ask_support`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-
-    const result = await response.json();
-    console.log("ask_support response:", result);
-    return result;
-
-  } catch (error: any) {
-    console.error("Ask support error:", error);
-    return null;
-  }
-};
-
-export const getProfileApi = async (
-  token: string,
-  setLoading: (v: boolean) => void
-) => {
-  try {
-    setLoading(true);
-
-    const response = await fetch(`${BaseUrl}auth/get-profile`, {
-      method: 'POST', // ✅ FIXED
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    });
-
-    const text = await response.text();
-
-    let res;
-    try {
-      res = JSON.parse(text);
-    } catch (e) {
-      console.log('Non JSON response:', text);
-      return null;
+    if (response.success) {
+      successToast('Signup successful!');
+    } else {
+      errorToast(response.message || 'Signup failed');
     }
 
-    return res;
-  } catch (error) {
-    console.log('Get Profile Error:', error);
-    return null;
-  } finally {
-    setLoading(false);
+    return response;
+  } catch (error: any) {
+    errorToast(error.message || 'Signup failed');
+    return { success: false, message: error.message || 'Signup failed' };
+  }
+};
+export const ApiCall = async (
+  endPonit:any,
+  body: any,
+  setLoading: (loading: boolean) => void
+): Promise<ApiResponse> => {
+  try {
+    setLoading(true)
+    const response = await loginApi({ url: endPonit, body }, setLoading);
+
+    if (response.success) {
+      successToast('Signup successful!');
+    } else {
+      errorToast(response.message || 'Signup failed');
+    }
+
+    return response;
+  } catch (error: any) {
+    errorToast(error.message || 'Signup failed');
+    return { success: false, message: error.message || 'Signup failed' };
   }
 };
 
 
-export const updateProfileApi = async (
-  token: string,
-  body: {
-    user_name: string;
-    email: string;
-    image?: any;
-  },
-  setLoading: (v: boolean) => void
-) => {
-  try {
-    setLoading(true);
+const objectToFormData = (obj: any) => {
+  const formData = new FormData();
 
-    const formData = new FormData();
-    formData.append('user_name', body.user_name);
-    formData.append('email', body.email);
+  Object.keys(obj).forEach(key => {
+    const value = obj[key];
 
-    if (body.image?.path) {
-      formData.append('image', {
-        uri: body.image.path,
-        type: body.image.mime || 'image/jpeg',
-        name: 'profile.jpg',
+    if (value === null || value === undefined) return;
+
+    // Image / File handling
+    if (typeof value === 'object' && value?.path) {
+      formData.append(key, {
+        uri: value.path,
+        type: value.mime || 'image/jpeg',
+        name: value.filename || `${key}.jpg`,
       } as any);
     }
 
-    const response = await fetch(`${BaseUrl}auth/update-profile`, {
+    // Array handling
+    else if (Array.isArray(value)) {
+      value.forEach((item, index) => {
+        formData.append(`${key}[${index}]`, String(item));
+      });
+    }
+
+    // Normal fields
+    else {
+      formData.append(key, String(value));
+    }
+  });
+
+  return formData;
+};
+
+
+export const POST_API = async (
+  token: string,
+  body: any,
+  endpoint,
+  setLoading: (v: boolean) => void
+) => {
+  try {
+    setLoading(true);
+
+    const formData = objectToFormData(body);
+
+    const response = await fetch(`${BaseUrl}${endpoint}`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
+        // ❌ DO NOT set Content-Type for FormData
       },
       body: formData,
     });
-
+// console.log(formData, 'formadata')
     const text = await response.text();
 
-    let res;
     try {
-      res = JSON.parse(text);
-    } catch (e) {
+        console.log(JSON.parse(text))
+      return JSON.parse(text);
+    } catch {
       console.log('Non JSON response:', text);
       return null;
     }
 
-    return res;
   } catch (error) {
-    console.log('Update Profile Error:', error);
+    console.log('Add Invoice Error:', error);
     return null;
   } finally {
     setLoading(false);
   }
 };
+
+

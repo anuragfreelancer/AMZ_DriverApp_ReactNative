@@ -1,201 +1,103 @@
-import { useEffect, useState } from 'react';
+// useSignup.ts
+import { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { SinupCustomer } from '../../../api/apiRequest';
+import { Alert } from 'react-native';
+import { signupApi } from '../../../api/authApi/AuthApi';
 import ScreenNameEnum from '../../../routes/screenName.enum';
-
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const mobileRegex = /^[0-9]{10,15}$/;
-const nameRegex = /^[a-zA-Z\s]{2,50}$/;
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-const yearRegex = /^(19|20)\d{2}$/; // Valid years 1900-2099
+import { errorToast } from '../../../utils/customToast';
 
 interface Credentials {
   email: string;
   password: string;
-  cpassword?: string; // Add this field
-  mobile: string;
+  cpassword?: string;
   fullName: string;
-  city?: string;
-  country?: string;
-  address?: string;
-  institutionName?: string;
-  unitName?: string;
-  unitManagerName?: string;
-  yearOfBirth?: string;
-  educationLevel?: string;
-  degree?: string;
-  schoolName?: string;
-  yearOfGraduation?: string;
-  criminalRecordExtract?: boolean;
+  mobile: string;
+  institutionName: string; // Driver License Number
+  unitName: string;        // Issued Date
+  unitManagerName: string; // Language
+  address: string;         // DOT Number
+  degree: string;          // MC Number
+  schoolName: string;      // Company Name
 }
 
 interface ValidationErrors {
-  email?: string;
-  password?: string;
-  confirmPassword?: string;
-  mobile?: string;
-  fullName?: string;
-  institutionName?: string;
-  unitName?: string;
-  unitManagerName?: string;
-  address?: string;
-  yearOfBirth?: string;
-  educationLevel?: string;
-  degree?: string;
-  schoolName?: string;
-  yearOfGraduation?: string;
-  general?: string;
+  [key: string]: string;
 }
 
 const useSignup = () => {
-  const [errors, setErrors] = useState<ValidationErrors>({});
   const navigation = useNavigation();
-  const [isLoading, setIsLoading] = useState(false);
-  const [savedRole, setSavedRole] = useState<string | null>(null);
-
   const [credentials, setCredentials] = useState<Credentials>({
     email: '',
     password: '',
     cpassword: '',
-    mobile: '',
     fullName: '',
-    address: '',
+    mobile: '',
     institutionName: '',
     unitName: '',
     unitManagerName: '',
-    yearOfBirth: '',
-    educationLevel: '',
+    address: '',
     degree: '',
     schoolName: '',
-    yearOfGraduation: '',
-    criminalRecordExtract: false,
   });
 
+  const [errors, setErrors] = useState<ValidationErrors>({});
+  const [isLoading, setIsLoading] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
 
-  useEffect(() => {
-    loadRole();
-  }, []);
-
-  // Load saved role from AsyncStorage
-  const loadRole = async () => {
-    try {
-      const role = await AsyncStorage.getItem("userRole");
-      if (role) {
-        setSavedRole(role);
-      }
-    } catch (error) {
-      console.log("Error fetching role:", error);
+  const handleChange = (field: keyof Credentials, value: string) => {
+    setCredentials((prev) => ({ ...prev, [field]: value }));
+    // Clear specific field error when user types
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: '' }));
+    }
+    // Clear general error when user interacts with any field
+    if (errors.general) {
+      setErrors((prev) => ({ ...prev, general: '' }));
     }
   };
 
-  const handleChange = (field: keyof Credentials, value: string | boolean) => {
-    setCredentials((prev) => ({ ...prev, [field]: value }));
-    // Clear error for this field
-    if (field === 'password' || field === 'cpassword') {
-      setErrors((prev) => ({ 
-        ...prev, 
-        [field]: '', 
-        confirmPassword: field === 'cpassword' ? '' : prev.confirmPassword 
-      }));
-    } else {
-      setErrors((prev) => ({ ...prev, [field]: '', general: '' }));
-    }
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
   const validateFields = (): boolean => {
-    const { email, password, cpassword, mobile, fullName, yearOfBirth, yearOfGraduation } = credentials;
     const validationErrors: ValidationErrors = {};
+    const { 
+      email, 
+      password, 
+      cpassword, 
+      mobile, 
+      fullName, 
+      institutionName, 
+      unitName, 
+      unitManagerName, 
+      address,
+      degree,
+      schoolName
+    } = credentials;
 
-    // Common validations for both roles
-    if (!email.trim()) {
-      validationErrors.email = 'Email is required.';
-    } else if (!emailRegex.test(email)) {
-      validationErrors.email = 'Enter a valid email address.';
-    }
-
-    if (!mobile.trim()) {
-      validationErrors.mobile = 'Mobile number is required.';
-    } else if (!mobileRegex.test(mobile)) {
-      validationErrors.mobile = 'Enter a valid 10-15 digit mobile number.';
-    }
-
-    if (!password.trim()) {
-      validationErrors.password = 'Password is required.';
-    } else if (password.length < 8) {
-      validationErrors.password = 'Password must be at least 8 characters.';
-    } else if (!passwordRegex.test(password)) {
-      validationErrors.password = 'Password must contain uppercase, lowercase, number and special character.';
-    }
-
-    if (!cpassword?.trim()) {
-      validationErrors.confirmPassword = 'Confirm password is required.';
-    } else if (password !== cpassword) {
-      validationErrors.confirmPassword = 'Passwords do not match.';
-    }
-
-    // Role-specific validations
-    if (savedRole === 'Substitute') {
-      // Worker validations
-      if (!fullName?.trim()) {
-        validationErrors.fullName = 'Full name is required.';
-      } else if (!nameRegex.test(fullName)) {
-        validationErrors.fullName = 'Name should contain only letters and spaces (2-50 characters).';
-      }
-
-      if (yearOfBirth) {
-        if (!yearRegex.test(yearOfBirth)) {
-          validationErrors.yearOfBirth = 'Enter a valid year (1900-2099).';
-        } else {
-          const birthYear = parseInt(yearOfBirth);
-          const currentYear = new Date().getFullYear();
-          const age = currentYear - birthYear;
-          if (age < 18) {
-            validationErrors.yearOfBirth = 'You must be at least 18 years old.';
-          }
-        }
-      } else {
-        validationErrors.yearOfBirth = 'Year of birth is required.';
-      }
-
-      // Education validations
-      if (!credentials.educationLevel?.trim()) {
-        validationErrors.educationLevel = 'Education level is required.';
-      }
-
-      if (credentials.yearOfGraduation && !yearRegex.test(credentials.yearOfGraduation)) {
-        validationErrors.yearOfGraduation = 'Enter a valid graduation year.';
-      }
-
-    } else {
-      // Institution validations
-      if (!credentials.institutionName?.trim()) {
-        validationErrors.institutionName = 'Institution name is required.';
-      }
-
-      if (!credentials.unitName?.trim()) {
-        validationErrors.unitName = 'Unit name is required.';
-      }
-
-      if (!credentials.unitManagerName?.trim()) {
-        validationErrors.unitManagerName = 'Unit manager name is required.';
-      } else if (!nameRegex.test(credentials.unitManagerName)) {
-        validationErrors.unitManagerName = 'Enter a valid name.';
-      }
-    }
-
-    // Common address validation
-    if (!credentials.address?.trim()) {
-      validationErrors.address = 'Address is required.';
-    } else if (credentials.address.length < 10) {
-      validationErrors.address = 'Address must be at least 10 characters.';
-    }
-
-    // Terms and conditions validation
-    if (!termsAccepted) {
-      validationErrors.general = 'Please accept Terms & Conditions.';
-    }
+    // Required field validations
+    if (!fullName.trim()) validationErrors.fullName = 'Full name is required';
+    if (!email.trim()) validationErrors.email = 'Email is required';
+    else if (!validateEmail(email)) validationErrors.email = 'Please enter a valid email';
+    
+    if (!password.trim()) validationErrors.password = 'Password is required';
+    else if (password.length < 6) validationErrors.password = 'Password must be at least 6 characters';
+    
+    if (!cpassword?.trim()) validationErrors.cpassword = 'Confirm Password is required';
+    else if (password !== cpassword) validationErrors.cpassword = 'Passwords do not match';
+    
+    if (!mobile.trim()) validationErrors.mobile = 'Mobile number is required';
+     
+    if (!institutionName.trim()) validationErrors.institutionName = 'Driver License Number is required';
+    if (!unitName.trim()) validationErrors.unitName = 'Issued State is required';
+    if (!unitManagerName.trim()) validationErrors.unitManagerName = 'Language is required';
+    if (!address.trim()) validationErrors.address = 'DOT Number is required';
+    if (!degree.trim()) validationErrors.degree = 'MC Number is required';
+    if (!schoolName.trim()) validationErrors.schoolName = 'Company Name is required';
+    
+    if (!termsAccepted) validationErrors.general = 'Please accept Terms & Conditions';
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -206,59 +108,37 @@ const useSignup = () => {
   };
 
   const handleSignup = async () => {
-    navigation.navigate(ScreenNameEnum.Login)
-    // if (!validateFields()) return;
+    if (!validateFields()) return;
 
-    // setIsLoading(true);
-    // setErrors({});
+    setIsLoading(true);
+    setErrors({}); // Clear all errors before API call
 
-    // try {
-    //   // Prepare data based on role
-    //   let signupData: any = {
-    //     email: credentials.email,
-    //     password: credentials.password,
-    //     mobile: credentials.mobile,
-    //     // role: savedRole || 'Institution',
-    //     address: credentials.address,
-    //     terms_accepted: termsAccepted,
-    //   };
-
-    //   // Add role-specific fields
-    //   if (savedRole === 'Substitute') {
-    //     signupData = {
-    //       ...signupData,
-    //       full_name: credentials.fullName,
-    //       year_of_birth: credentials.yearOfBirth,
-    //       education_level: credentials.educationLevel,
-    //       degree: credentials.degree,
-    //       school_name: credentials.schoolName,
-    //       year_of_graduation: credentials.yearOfGraduation,
-    //       criminal_record_extract: credentials.criminalRecordExtract,
-    //     };
-    //   } else {
-    //     signupData = {
-    //       ...signupData,
-    //       full_name: credentials.institutionName,
-    //       unit_name: credentials.unitName,
-    //       unit_manager_name: credentials.unitManagerName,
-    //     };
-    //   }
-
-    //   const param = {
-    //     ...signupData,
-    //     navigation,
-    //     roleType: savedRole === 'Substitute' ? 'User' : 'Institution',
-    //   };
-
-    //   console.log(param, 'the param')
-    //   await SinupCustomer(param, setIsLoading);
-
-    // } catch (error: any) {
-    //   console.error("Signup Error:", error);
-    //   setErrors({ 
-    //     general: error.message || 'Registration failed. Please try again.' 
-    //   });
-    // }
+    try {
+      const signupData = {
+        email: credentials.email.trim(),
+        password: credentials.password,
+        user_name: credentials.fullName.trim(),
+        mobile_number: credentials.mobile.trim(),
+        driver_license_number: credentials.institutionName.trim(),
+        issued_date:"2025-12-20",
+        // issued_date: credentials.unitName.trim(), // Changed from unitName to issued_date
+        language: credentials.unitManagerName.trim(),
+        dot_number: credentials.address.trim(), // Changed from bot_number to dot_number
+        mc_number: credentials.degree.trim(),
+        company_name: credentials.schoolName.trim(),
+        company_authorised: 'yes',
+      };
+      const response = await signupApi(signupData, setIsLoading);
+       if (response.success) {
+       navigation.navigate(ScreenNameEnum.Login) 
+      }  
+    } catch (error: any) {
+        setIsLoading(false);
+      errorToast( error.message || 'Something went wrong. Please try again.')
+      
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return {
@@ -269,7 +149,6 @@ const useSignup = () => {
     setTermsAccepted,
     handleChange,
     handleSignup,
-    savedRole,
   };
 };
 

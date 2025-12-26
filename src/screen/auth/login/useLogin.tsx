@@ -1,21 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { loginApi } from '../../../api/authApi/AuthApi';
+import { loginApi, BaseUrl } from '../../../api/authApi/AuthApi';
 import ScreenNameEnum from '../../../routes/screenName.enum';
 import { errorToast, successToast } from '../../../utils/customToast';
 
 interface Credentials {
-  country_code: string;
-  mobile_number: string;
+  email: string;
+  password: string;
 }
 
 const useLogin = () => {
   const [credentials, setCredentials] = useState<Credentials>({
-    country_code: '62',
-    mobile_number: '',
+    email: '',
+    password: '',
   });
 
-  const [errors, setErrors] = useState<any>({});
+  const [errors, setErrors] = useState<Partial<Credentials>>({});
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation<any>();
 
@@ -25,54 +25,33 @@ const useLogin = () => {
   };
 
   const validateFields = () => {
-    const validationErrors: any = {};
-    if (!credentials.mobile_number) {
-      validationErrors.mobile_number = 'Mobile number is required';
-    }
+    const validationErrors: Partial<Credentials> = {};
+    if (!credentials.email) validationErrors.email = 'Email is required';
+    if (!credentials.password) validationErrors.password = 'Password is required';
     setErrors(validationErrors);
     return Object.keys(validationErrors).length === 0;
   };
 
   const handleLogin = async () => {
-     navigation.navigate(ScreenNameEnum.DrawerNavgation, 
-      // {
-      //     phone: credentials.mobile_number,
+    if (!validateFields()) return;
 
-      //     // response: response
-
-      //   }
+    try {
+      const response = await loginApi(
+        {
+          url: 'login', // endpoint relative to BaseUrl
+          body: credentials,
+        },
+        setIsLoading
       );
-    // if (!validateFields()) return;
-
-    // try {
-    //   const body = {
-    //     country_code: credentials.country_code,
-    //     mobile_number: credentials.mobile_number,
-    //   };
-
-    //   const response = await loginApi(
-    //     { url: 'auth/login', body },
-    //     setIsLoading
-    //   );
-
-    //   if (response?.success) {
-    //     successToast(response?.message)
-    //     // Navigate to OTP screen
-    //     navigation.navigate(ScreenNameEnum.OtpScreen, {
-    //       phone: credentials.mobile_number,
-
-    //       response: response
-
-    //     });
-    //   } else {
-    //     errorToast(response?.message)
-
-    //     alert(response?.message || 'Login failed');
-    //   }
-    // } catch (error) {
-    //   errorToast(error?.message || "Login Error")
-
-    // }
+       if (response?.success) {
+         successToast(response?.message || 'Login successful');
+        navigation.navigate(ScreenNameEnum.DrawerNavgation);
+      } else {
+        errorToast(response?.message || 'Login failed');
+      }
+    } catch (error: any) {
+      errorToast(error?.message || 'Login Error');
+    }
   };
 
   return {

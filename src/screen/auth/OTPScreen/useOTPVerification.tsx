@@ -1,37 +1,36 @@
 import { useEffect, useState } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useBlurOnFulfill, useClearByFocusCell } from 'react-native-confirmation-code-field';
-import { useDispatch } from 'react-redux';
 import ScreenNameEnum from '../../../routes/screenName.enum';
-import { verifyOtp } from '../../../api/authApi/AuthApi';
-import { loginSuccess } from '../../../redux/feature/authSlice';
-import { successToast } from '../../../utils/customToast';
+import { ApiCall } from '../../../api/authApi/AuthApi';
+import { errorToast, successToast } from '../../../utils/customToast';
 
 export const useOtpVerification = () => {
   const navigation = useNavigation();
   const route: any = useRoute();
-  const { phone, response, country_code, from } = route.params || {};
+  const { response } = route.params || {};
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [value, setValue] = useState(''); // OTP input
   const [errorMessage, setErrorMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [timer, setTimer] = useState(0);
-  const dispatch = useDispatch();
+const [userId, setUserId] = useState<string | null>(null);
 
-  const [value, setValue] = useState(''); // Initialize first
+ console.log("response.data.userId",response?.user_id)
+  const cellCount = 4; // Number of OTP digits
 
-  const ref = useBlurOnFulfill({ value });
+  // OTP input helpers from react-native-confirmation-code-field
+  const ref = useBlurOnFulfill({ value, cellCount });
   const [props, getCellOnLayoutHandler] = useClearByFocusCell({ value, setValue });
 
   // Timer effect
   useEffect(() => {
-    let interval: NodeJS.Timer;
-    if (timer > 0) {
-      interval = setInterval(() => setTimer(prev => prev - 1), 1000);
-    }
+    if (timer <= 0) return;
+    const interval = setInterval(() => setTimer(prev => prev - 1), 1000);
     return () => clearInterval(interval);
   }, [timer]);
-const cellCount = 4;
-  // Handle OTP input change
+
+  // Handle OTP input changes
   const handleChangeText = (text: string) => {
     setValue(text);
     if (text.length < cellCount) {
@@ -40,44 +39,34 @@ const cellCount = 4;
       setErrorMessage('');
     }
   };
-
-  // Verify OTP
+   // Verify OTP
   const handleVerifyOTP = async () => {
-    if(from == 'reset'){
-navigation.navigate(ScreenNameEnum.CreateNewPassword)
-    }else{
-     navigation.navigate(ScreenNameEnum.Login)
-
+    if (value.length < cellCount) {
+      setErrorMessage(`Please enter ${cellCount}-digit OTP`);
+      return;
     }
-  //   if (value.length !== cellCount) {
-  //     setErrorMessage(`Please enter ${cellCount}-digit OTP`);
-  //     return;
-  //   }
-  //   try {
-  //     const body = {
-  //       country_code: country_code || '62',
-  //       mobile_number: phone,
-  //      otp: value, // Or use user input
-  //     };
-  //     const resp = await verifyOtp({ url: 'auth/verify-otp', body }, setIsLoading);
-  //     if (resp?.success) {
-  //               successToast(response?.message)
-        
-  //          const { token, user_data } = resp?.data;
-  //  dispatch(loginSuccess({ userData: user_data, token }));
-  //       navigation.navigate(ScreenNameEnum.SecuritySetupScreen ,{
-  //         resp:resp?.data
-  //       });
-  //     } else {
-  //                       successToast(response?.message)
 
-  //       setErrorMessage(response?.message || 'OTP verification failed');
-  //     }
-  //   } catch (error) {
-  //                             successToast(error?.message ||"")
+    try {
+      setIsLoading(true);
+      const endPoint = 'verify-otp';
+      const params = {
+        otp: value,               // OTP entered by the user
+        user_id: response?.user_id // user ID from previous API response
+      };
 
-  //      setErrorMessage('Something went wrong. Please try again.');
-  //   }
+      const res = await ApiCall(endPoint, params, setIsLoading);
+      if (res.success) {
+        successToast('OTP Verified Successfully!');
+        // Navigate to Create New Password screen
+        navigation.navigate(ScreenNameEnum.CreateNewPassword, { userId: response?.user_id  });
+      } else {
+        errorToast(res.message || 'OTP verification failed');
+      }
+    } catch (error: any) {
+      errorToast(error.message || 'Something went wrong');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return {
@@ -85,15 +74,13 @@ navigation.navigate(ScreenNameEnum.CreateNewPassword)
     setValue,
     isLoading,
     errorMessage,
+    timer,
     ref,
     props,
     getCellOnLayoutHandler,
     handleChangeText,
     handleVerifyOTP,
     navigation,
-    timer,
-    phone,
-    country_code,
     response
   };
 };

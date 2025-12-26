@@ -28,10 +28,9 @@ export default function OtpScreen() {
     getCellOnLayoutHandler,
     handleChangeText,
     handleVerifyOTP,
-    phone,
-    country_code,
-    response ,
-  } = useOtpVerification();
+ 
+ 
+   } = useOtpVerification();
 const nav = useNavigation()
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>

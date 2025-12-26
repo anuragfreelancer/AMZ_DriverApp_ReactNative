@@ -1,27 +1,18 @@
-import OnboardingScreen from "../screen/auth/Onboarding/Onboarding";
-import ScreenNameEnum from "./screenName.enum";
-import TabNavigator from "../navigators/TabNavigation";
-import NotificationsScreen from "../screen/Notification/Notification";
-import ChangePassword from "../screen/Profile/ChangePassword/ChangePassword";
-import HelpScreen from "../screen/Profile/Help/Helps";
+ import ScreenNameEnum from "./screenName.enum";
+ import NotificationsScreen from "../screen/Notification/Notification";
+ import HelpScreen from "../screen/Profile/Help/Helps";
 import Splash from "../screen/auth/Splash/Splash";
 import OtpScreen from "../screen/auth/OTPScreen/OtpScreen";
-import ViewDetails from "../screen/BottomTab/Shifts/ViewDetails";
-import LegalPoliciesScreen from "../screen/Profile/LegalPoliciesScreen";
+ import LegalPoliciesScreen from "../screen/Profile/LegalPoliciesScreen";
 import PrivacyPolicy from "../screen/Profile/PrivacyPolicy";
 import OrdersPrfile from "../screen/Profile/OrdersPrfile/OrdersPrfile";
 import Login from "../screen/auth/login/Login";
-import SecuritySetupScreen from "../screen/auth/SecuritySetupScreen/SecuritySetupScreen";
-import FaceLockcomplete from "../screen/FaceLockEnabledScreen/FaceLockEnabledScreen";
-import PasscodeCodeOtp from "../screen/auth/PasscodeCodeOtp/PasscodeCodeOtp";
-import loginPin from "../screen/auth/loginPin/loginPin";
-import CreateNewInvoice from "../screen/CreateNewInvoice/CreateNewInvoice";
+ import FaceLockcomplete from "../screen/FaceLockEnabledScreen/FaceLockEnabledScreen";
+  import CreateNewInvoice from "../screen/CreateNewInvoice/CreateNewInvoice";
 import ProfileScreen from "../screen/Profile/ProfileScreen/ProfileScreen";
 import InvoiceUploadScreen from "../screen/BottomTab/InvoiceUploadScreen/InvoiceUploadScreen";
 import ClickUploadScreen from "../screen/BottomTab/CameraUpload/ClickUploadScreen";
-import PdfViewerScreen from "../screen/BottomTab/Invoice/invoiceDetail";
-import InvoiceDetail from "../screen/BottomTab/Invoice/invoiceDetail";
-import SignUpUI from "../screen/auth/signUp/SignUp";
+ import SignUpUI from "../screen/auth/signUp/SignUp";
 import PasswordReset from "../screen/auth/passwordReset/PasswordReset";
 import CreateNewPassword from "../screen/auth/createNewPassword/CreateNewPassword";
 import DrawerNavigation from "../navigators/DrawerNavigation";
@@ -31,10 +22,7 @@ const _routes: any = {
       name: ScreenNameEnum.SPLASH_SCREEN,
       Component: Splash,
     },
-    {
-      name: ScreenNameEnum.loginPin,
-      Component: loginPin,
-    },
+ 
     {
       name: ScreenNameEnum.CreateNewInvoice,
       Component: CreateNewInvoice,
@@ -60,24 +48,13 @@ const _routes: any = {
     },
 
 
-    {
-      name: ScreenNameEnum.OnboardingScreen,
-      Component: OnboardingScreen,
-    },
+ 
 
     {
       name: ScreenNameEnum.FaceLockcomplete,
       Component: FaceLockcomplete,
     },
-    {
-      name: ScreenNameEnum.PasscodeCodeOtp,
-      Component: PasscodeCodeOtp,
-    },
-
-    {
-      name: ScreenNameEnum.SecuritySetupScreen,
-      Component: SecuritySetupScreen,
-    },
+ 
 
 
     {
@@ -92,11 +69,7 @@ const _routes: any = {
     },
 
 
-
-    {
-      name: ScreenNameEnum.changePassword,
-      Component: ChangePassword,
-    },
+ 
 
     {
       name: ScreenNameEnum.Help,
@@ -129,10 +102,7 @@ const _routes: any = {
     },
 
 
-    {
-      name: ScreenNameEnum.InvoiceDetail,
-      Component: InvoiceDetail,
-    },
+ 
 
 
     {

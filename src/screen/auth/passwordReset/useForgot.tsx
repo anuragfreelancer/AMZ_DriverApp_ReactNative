@@ -1,48 +1,60 @@
 import { useState } from 'react';
- import { useNavigation } from '@react-navigation/native';
-import { restEmailOtp } from '../../../api/apiRequest';
+import { useNavigation } from '@react-navigation/native';
+import { ApiCall, } from '../../../api/authApi/AuthApi';
+import { errorToast } from '../../../utils/customToast';
 import ScreenNameEnum from '../../../routes/screenName.enum';
-  
- const useForgot = () => {
-  const [errors, setErrors] = useState <any>({});
-  // test11@gmail.com
-   const navigation = useNavigation();
-   const [isLoading, setisLoading] = useState(false)
-  const [credentials, setCredentials] = useState({ email: '', });
+
+interface Credentials {
+  email: string;
+}
+
+const useForgot = () => {
+  const [credentials, setCredentials] = useState<Credentials>({ email: '' });
+  const [errors, setErrors] = useState<any>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const navigation = useNavigation();
+
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const handleChange = (field:string, value:string) => {
+
+  const handleChange = (field: string, value: string) => {
     setCredentials(prev => ({ ...prev, [field]: value }));
-    setErrors((prev:any) => ({ ...prev, [field]: '' }));
+    setErrors(prev => ({ ...prev, [field]: '' }));
+
     if (field === 'email') {
       if (!value.trim()) {
-        setErrors((prev:any) => ({ ...prev, email: 'Email is required.' }));
+        setErrors(prev => ({ ...prev, email: 'Email is required.' }));
       } else if (!emailRegex.test(value)) {
-        setErrors((prev:any) => ({ ...prev, email: 'Enter a valid email address.' }));
+        setErrors(prev => ({ ...prev, email: 'Enter a valid email address.' }));
       }
     }
- 
   };
-  const handleForgot =async () => {
-    navigation.navigate(ScreenNameEnum.OtpScreen, {from:'reset'})
-    // const { email } = credentials;
-    // let validationErrors:any = {}; 
- 
-    // if (!email.trim()) {
-    //   validationErrors.email = 'Email is required.';
-    // } else if (!emailRegex.test(email)) {
-    //   validationErrors.email = 'Enter a valid email address.';
-    // }
-    // if (Object.keys(validationErrors).length > 0) {
-    //   setErrors(validationErrors);
-    //   return;
-    // }
-    //  try {
-    //   const params = { email:email,navigation:navigation };
-    //    const response = await restEmailOtp(params, setisLoading);
-    // } catch (error) {
-    //  }
-   };
 
+  const handleForgot = async () => {
+    const { email } = credentials;
+    const validationErrors: any = {};
+
+    if (!email.trim()) {
+      validationErrors.email = 'Email is required.';
+    } else if (!emailRegex.test(email)) {
+      validationErrors.email = 'Enter a valid email address.';
+    }
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    try {
+      let endPonit ="forgotPassword"
+      const params :any = { email , };
+      const response = await ApiCall(endPonit,params, setIsLoading);
+      if (response.success) {
+        // Navigate to OTP screen if needed
+       navigation.navigate(ScreenNameEnum.OtpScreen, { response: response?.data });
+      }
+    } catch (error: any) {
+      errorToast(error.message || 'Something went wrong');
+    }
+  };
 
   return {
     credentials,

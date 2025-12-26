@@ -12,8 +12,7 @@ import {
   Platform,
 } from 'react-native';
 import { pickProfileImage } from './imagePicker';
-import { getProfileApi, updateProfileApi } from '../../../api/authApi/AuthApi';
-import { errorToast, successToast } from '../../../utils/customToast';
+ import { errorToast, successToast } from '../../../utils/customToast';
 import CustomHeader from '../../../compoent/CustomHeader';
 import StatusBarComponent from '../../../compoent/StatusBarCompoent';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -22,8 +21,7 @@ import imageIndex from '../../../assets/imageIndex';
 import { useSelector } from 'react-redux';
 
 // Import vector icons
-import Ionicons from 'react-native-vector-icons/Ionicons'; // For iOS-style icons
-import { color } from '../../../constant';
+ import { color } from '../../../constant';
 import TextInputField from '../../../compoent/TextInputField';
  
 const ProfileScreen = () => {
@@ -47,42 +45,7 @@ const ProfileScreen = () => {
   //     }
   //     return null;
   //   };
-
-  const init = async () => {
-    fetchProfile(auth?.token);
-  };
-
-  const fetchProfile = async (token: string) => {
-    const res = await getProfileApi(token, setLoading);
-    if (res?.success) {
-      setProfile(res?.data?.user_data);
-    }
-  };
-
-  const onPickImage = async () => {
-    const img = await pickProfileImage();
-    if (img) setImage(img);
-  };
-
-  const onUpdate = async () => {
-    const res = await updateProfileApi(
-      auth?.token,
-      {
-        user_name: profile.user_name,
-        email: profile.email,
-        image,
-      },
-      setLoading
-    );
-
-    if (res?.success) {
-      successToast(res.message);
-      setImage(null);
-      fetchProfile(auth?.token);
-    } else {
-      errorToast(res?.message);
-    }
-  };
+ 
 
   if (loading) {
     return (

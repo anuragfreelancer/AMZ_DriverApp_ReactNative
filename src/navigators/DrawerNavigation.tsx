@@ -5,8 +5,7 @@ import CustomDrawerContent from '../compoent/CustomDrawerContent';
 import PrivacyPolicy from '../screen/Profile/PrivacyPolicy';
 import ScreenNameEnum from '../routes/screenName.enum';
 import HelpScreen from '../screen/Profile/Help/Helps';
-import ChangePasswordScreen from '../screen/Profile/ChangePassword/ChangePassword'; 
-import Dashboard from '../screen/BottomTab/DashBoard/Dashboard';
+ import Dashboard from '../screen/BottomTab/DashBoard/Dashboard';
 import ProfileScreen from '../screen/Profile/ProfileScreen/ProfileScreen';
 import NotificationsScreen from '../screen/Notification/Notification';
 import NotificationsSetting from '../screen/Profile/NotificationsSetting';
@@ -52,8 +51,7 @@ export default function DrawerNavigation() {
       <Drawer.Screen name={ScreenNameEnum.DutyLog} component={DutyLog} />
       <Drawer.Screen name={ScreenNameEnum.LegalPoliciesScreen} component={LegalPoliciesScreen} />
       <Drawer.Screen name={ScreenNameEnum.NotificationsSetting} component={NotificationsSetting} />
-      <Drawer.Screen name={ScreenNameEnum.changePassword} component={ChangePasswordScreen} />
-      <Drawer.Screen name={ScreenNameEnum.EditProfile} component={ProfileScreen} /> 
+       <Drawer.Screen name={ScreenNameEnum.EditProfile} component={ProfileScreen} /> 
       <Drawer.Screen name={ScreenNameEnum.PrivacyPolicy} component={PrivacyPolicy} />
 
       <Drawer.Screen name={ScreenNameEnum.Help} component={HelpScreen} />

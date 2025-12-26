@@ -1,8 +1,7 @@
 import {
   View,
   Text,
-  Image,
-  StyleSheet,
+   StyleSheet,
   ScrollView,
 
 } from 'react-native';
@@ -108,9 +107,8 @@ export default function CreateNewPassword() {
             <CustomButton
               title={'Save'}
               onPress={() => {
-                // handleResetPass()
-                setModalVisible(true)
-              }}
+               handleResetPass()
+               }}
 
             />
 
