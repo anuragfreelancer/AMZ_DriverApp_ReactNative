@@ -17,7 +17,7 @@ import LoadingModal from '../../utils/Loader';
 import { hp } from '../../utils/Constant';
 import font from '../../theme/font';
 import { Privacypolicy } from '../../api/authApi/AuthApi';
-
+ 
 const PrivacyPolicy = () => {
   const [isLoading, setLoading] = useState(false);
   const [content, setContent] = useState<string>('');
@@ -30,7 +30,7 @@ const PrivacyPolicy = () => {
   const getPrivacyPolicy = async () => {
     try {
       const response = await Privacypolicy(setLoading);
-
+console.log("response?.data",response?.data)
       if (
         response?.data &&
         Array.isArray(response.data) &&

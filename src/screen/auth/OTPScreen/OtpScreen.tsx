@@ -97,13 +97,12 @@ const nav = useNavigation()
             <View style={{ marginTop: 15 }}>
               <CustomButton title="OTP Verify" onPress={handleVerifyOTP} />
             </View>
-<Text style={[styles.txtDes, {marginVertical:20, marginTop:30}]}>
+{/* <Text style={[styles.txtDes, {marginVertical:20, marginTop:30}]}>
                 Didn't receive the code? (00:15)
-                 {/* {phone} {country_code}  */}
-               </Text>
+                </Text> */}
 
           </View>
-           <Text style={[styles.txtDes, {marginVertical:20, marginTop:30, color:color.primary}]}>Resend OTP</Text>
+           {/* <Text style={[styles.txtDes, {marginVertical:20, marginTop:30, color:color.primary}]}>Resend OTP</Text> */}
         </ScrollView>
        
       </View>

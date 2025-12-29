@@ -4,16 +4,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 interface AuthState {
   isLoading: boolean;
   isError: boolean;
-  isSuccess: boolean;
   isLogin: boolean;
-  userData: any;
+  userData: any | null;
   token: string | null;
 }
 
 const initialState: AuthState = {
   isLoading: false,
   isError: false,
-  isSuccess: false,
   isLogin: false,
   userData: null,
   token: null,
@@ -23,12 +21,15 @@ const AuthSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    setLoading(state, action: PayloadAction<boolean>) {
+      state.isLoading = action.payload;
+    },
+
     loginSuccess(
       state,
       action: PayloadAction<{ userData: any; token: string }>
     ) {
       state.isLoading = false;
-      state.isSuccess = true;
       state.isError = false;
       state.isLogin = true;
       state.userData = action.payload.userData;
@@ -36,7 +37,10 @@ const AuthSlice = createSlice({
 
       AsyncStorage.setItem(
         'authData',
-        JSON.stringify(action.payload)
+        JSON.stringify({
+          userData: action.payload.userData,
+          token: action.payload.token,
+        })
       );
     },
 
@@ -51,11 +55,7 @@ const AuthSlice = createSlice({
 
     logout() {
       AsyncStorage.removeItem('authData');
-      return initialState; // 🔥 RESET FULL STATE
-    },
-
-    setLoading(state, action: PayloadAction<boolean>) {
-      state.isLoading = action.payload;
+      return initialState;
     },
 
     setError(state, action: PayloadAction<boolean>) {

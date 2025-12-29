@@ -31,7 +31,7 @@ const menuItems = [
   { id: "9", title: "Service Rules", icon: imageIndex.terms, screen: ScreenNameEnum.LegalPoliciesScreen },
   { id: "6", title: "Privacy Policy", icon: imageIndex.service, screen: ScreenNameEnum.PrivacyPolicy },
 
-  { id: "14", title: "Logout", icon: imageIndex.logout1, screen: "Reminder" },
+  { id: "12", title: "Logout", icon: imageIndex.logout1, screen: "Reminder" },
 
 ];
 
@@ -138,6 +138,14 @@ export default function CustomDrawerContent(props: DrawerContentComponentProps) 
     )
   }
   const dispatch = useDispatch()
+    const handleLogout = () => {
+    dispatch(logout());
+
+    navigation.reset({
+      index: 0,
+      routes: [{ name: ScreenNameEnum.Login }],
+    });
+  };
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: "#fff" }}>
       <StatusBarComponent />
@@ -187,11 +195,10 @@ export default function CustomDrawerContent(props: DrawerContentComponentProps) 
         onClose={() => {
           setLogoutModal(false)
         }}
-        onConfirm={() => {
-          setLogoutModal(false)
-          dispatch(logout());
-          navigation.replace(ScreenNameEnum.ChooseRole);
-        }}
+        onLogout={handleLogout}
+ 
+
+         
       />
     </SafeAreaView>
   );

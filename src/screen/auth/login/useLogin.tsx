@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { loginApi, BaseUrl } from '../../../api/authApi/AuthApi';
+import { loginApi } from '../../../api/authApi/AuthApi';
 import ScreenNameEnum from '../../../routes/screenName.enum';
 import { errorToast, successToast } from '../../../utils/customToast';
+import { loginSuccess } from '../../../redux/feature/authSlice';
+import { useDispatch } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Credentials {
   email: string;
@@ -11,8 +14,8 @@ interface Credentials {
 
 const useLogin = () => {
   const [credentials, setCredentials] = useState<Credentials>({
-    email: '',
-    password: '',
+    email: 'A@gmail.com',
+    password: '123456',
   });
 
   const [errors, setErrors] = useState<Partial<Credentials>>({});
@@ -32,6 +35,8 @@ const useLogin = () => {
     return Object.keys(validationErrors).length === 0;
   };
 
+  const dispatch = useDispatch()
+
   const handleLogin = async () => {
     if (!validateFields()) return;
 
@@ -43,7 +48,15 @@ const useLogin = () => {
         },
         setIsLoading
       );
+      console.log("response",response)
        if (response?.success) {
+          dispatch(
+      loginSuccess({
+     userData: response.data,          // ✅ full user object
+      token: response.data.token,  
+      })
+    );
+await AsyncStorage.setItem('token', response.data.token);
          successToast(response?.message || 'Login successful');
         navigation.navigate(ScreenNameEnum.DrawerNavgation);
       } else {

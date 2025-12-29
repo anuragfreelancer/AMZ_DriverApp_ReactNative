@@ -1,3 +1,5 @@
+import axios from "axios";
+import { base_url } from "..";
 import { errorToast, successToast } from "../../utils/customToast";
 
 export const BaseUrl = 'https://server-php-8-3.technorizen.com/amz_pro/api/auth/';
@@ -177,3 +179,102 @@ export const POST_API = async (
 };
 
 
+
+export const getApi = async (
+  endpoint: string,
+  token?: string,
+  method: string = "GET",
+  setLoading?: (val: boolean) => void
+) => {
+  try {
+    setLoading?.(true);
+
+    const url = endpoint.startsWith("http")
+      ? endpoint
+      : `${BaseUrl}${endpoint}`;
+
+    const response = await axios({
+      method,
+      url,
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    });
+
+    return response.data;
+  } catch (error: any) {
+    console.error(
+      "API Error:",
+      error?.response?.data || error?.message
+    );
+    return error?.response?.data || {
+      success: false,
+      message: "Something went wrong",
+    };
+  } finally {
+    setLoading?.(false);
+  }
+};
+ 
+ export const Privacypolicy = async (setLoading: any) => {
+  setLoading(true);
+  try {
+    const response = await fetch(`${BaseUrl}common/get_privacy_policy`, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const textResponse = await response.text();
+    const parsedResponse = JSON.parse(textResponse);
+
+    console.log("parsedResponse", parsedResponse);
+
+    if (parsedResponse?.status == 1) {
+      successToast(parsedResponse?.message);
+      return parsedResponse; // ✅ Return the data
+    }  
+
+  } catch (error: any) {
+    console.error('Privacy Policy error:', error);
+    errorToast(error.message);
+    return null;
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+ export  const Termsconditions = async (setLoading: any) => {
+  setLoading(true);
+  try {
+    const response = await fetch(`${BaseUrl}common/get_terms_and_condition`, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const textResponse = await response.text();
+    const parsedResponse = JSON.parse(textResponse);
+
+    console.log("parsedResponse", parsedResponse);
+
+    if (parsedResponse?.status == 1) {
+      successToast(parsedResponse?.message);
+      return parsedResponse; // ✅ Return the data
+    }  
+ 
+
+  } catch (error: any) {
+    console.error('Privacy Policy error:', error);
+    errorToast(error.message);
+    return null;
+  } finally {
+    setLoading(false);
+  }
+};

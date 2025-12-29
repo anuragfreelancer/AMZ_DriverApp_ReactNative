@@ -23,6 +23,8 @@ import {
 } from 'react-native';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import StatusBarComponent from '../../../compoent/StatusBarCompoent';
+import useDashboard from './useDashboard';
+import LoadingModal from '../../../utils/Loader';
 
 
 const DUTY_OPTIONS = [
@@ -33,6 +35,7 @@ const DUTY_OPTIONS = [
 ];
 
 const DashboardScreen = () => {
+
   const insets = useSafeAreaInsets()
   const navigation = useNavigation()
   const [dutyModalVisible, setDutyModalVisible] = useState(false);
@@ -52,8 +55,11 @@ const [selectedDuty, setSelectedDuty] = useState({
   icon: 'checkmark-circle',
   color: '#34C759',
 });
-  return (
+const { userData, loading } = useDashboard();
+
+   return (
     <SafeAreaView style={styles.container}>
+        <LoadingModal visible={loading} />
       <StatusBarComponent/>
       {/* Header */}
        <LinearGradient
@@ -78,7 +84,7 @@ const [selectedDuty, setSelectedDuty] = useState({
           </TouchableOpacity>
           <View>
             <Text style={styles.welcome}>Hello, Welcome 👋</Text>
-            <Text style={styles.userName}>Lincoln Bergson</Text>
+             <Text style={styles.userName}>{userData?.user_data?.user_name}</Text>
           </View>
 </View>
           <TouchableOpacity>
@@ -118,7 +124,7 @@ const [selectedDuty, setSelectedDuty] = useState({
           <Image source={imageIndex.company} style={styles.iconCircle}/>
           <View>
             <Text style={styles.cardLabel}>Company</Text>
-            <Text style={styles.cardTitle}>Swift Transportation Co.</Text>
+            <Text style={styles.cardTitle}>{userData?.user_data?.company_name}</Text>
           </View>
         </View>
 
