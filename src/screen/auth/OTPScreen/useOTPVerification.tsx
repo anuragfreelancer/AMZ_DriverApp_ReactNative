@@ -4,6 +4,7 @@ import { useBlurOnFulfill, useClearByFocusCell } from 'react-native-confirmation
 import ScreenNameEnum from '../../../routes/screenName.enum';
 import { ApiCall } from '../../../api/authApi/AuthApi';
 import { errorToast, successToast } from '../../../utils/customToast';
+import { ENDPOINT } from '../../../api/endpoints';
 
 export const useOtpVerification = () => {
   const navigation = useNavigation();
@@ -48,7 +49,7 @@ const [userId, setUserId] = useState<string | null>(null);
 
     try {
       setIsLoading(true);
-      const endPoint = 'verify-otp';
+      const endPoint = ENDPOINT.VERIFY_OTP;
       const params = {
         otp: value,               // OTP entered by the user
         user_id: response?.user_id // user ID from previous API response

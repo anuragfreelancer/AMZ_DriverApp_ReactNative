@@ -4,6 +4,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { Alert } from 'react-native';
 import { ApiCall } from '../../../api/authApi/AuthApi';
 import { errorToast, successToast } from '../../../utils/customToast';
+import { ENDPOINT } from '../../../api/endpoints';
 // import { updatePassword } from '../../../api/apiRequest';
  
 const useCreateNewPassword = () => {
@@ -46,7 +47,7 @@ const useCreateNewPassword = () => {
 
     try {
       setIsLoading(true);
-      const endPoint = 'createNewPassword';
+      const endPoint = ENDPOINT.CREATE_NEW_PASSWORD;
       const params = {
         password: password,
         c_password: confirmPassword,

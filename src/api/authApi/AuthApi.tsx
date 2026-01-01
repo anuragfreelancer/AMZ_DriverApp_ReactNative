@@ -1,9 +1,9 @@
 import axios from "axios";
-import { base_url } from "..";
+import { BASE_URL } from "..";
 import { errorToast, successToast } from "../../utils/customToast";
+import { ENDPOINT } from "../endpoints";
 
-export const BaseUrl = 'https://server-php-8-3.technorizen.com/amz_pro/api/auth/';
-
+ 
 interface ApiParam {
   url: string;
   body?: any;
@@ -41,7 +41,7 @@ export const loginApi = async (
       redirect: 'follow',
     };
 
-    const response = await fetch(`${BaseUrl}${param.url}`, requestOptions);
+    const response = await fetch(`${BASE_URL}${param.url}`, requestOptions);
     const text = await response.text();
 
     let resJson: ApiResponse;
@@ -68,7 +68,7 @@ export const signupApi = async (
   setLoading: (loading: boolean) => void
 ): Promise<ApiResponse> => {
   try {
-    const response = await loginApi({ url: 'signup', body }, setLoading);
+    const response = await loginApi({ url: ENDPOINT.SIGN_UP, body }, setLoading);
 
     if (response.success) {
       successToast('Signup successful!');
@@ -150,7 +150,7 @@ export const POST_API = async (
 
     const formData = objectToFormData(body);
 
-    const response = await fetch(`${BaseUrl}${endpoint}`, {
+    const response = await fetch(`${BASE_URL}${endpoint}`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -179,48 +179,11 @@ export const POST_API = async (
 };
 
 
-
-export const getApi = async (
-  endpoint: string,
-  token?: string,
-  method: string = "GET",
-  setLoading?: (val: boolean) => void
-) => {
-  try {
-    setLoading?.(true);
-
-    const url = endpoint.startsWith("http")
-      ? endpoint
-      : `${BaseUrl}${endpoint}`;
-
-    const response = await axios({
-      method,
-      url,
-      headers: {
-        "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-    });
-
-    return response.data;
-  } catch (error: any) {
-    console.error(
-      "API Error:",
-      error?.response?.data || error?.message
-    );
-    return error?.response?.data || {
-      success: false,
-      message: "Something went wrong",
-    };
-  } finally {
-    setLoading?.(false);
-  }
-};
  
  export const Privacypolicy = async (setLoading: any) => {
   setLoading(true);
   try {
-    const response = await fetch(`${BaseUrl}common/get_privacy_policy`, {
+    const response = await fetch(`${BASE_URL}common/get_privacy_policy`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
@@ -251,7 +214,7 @@ export const getApi = async (
  export  const Termsconditions = async (setLoading: any) => {
   setLoading(true);
   try {
-    const response = await fetch(`${BaseUrl}common/get_terms_and_condition`, {
+    const response = await fetch(`${BASE_URL}common/get_terms_and_condition`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',

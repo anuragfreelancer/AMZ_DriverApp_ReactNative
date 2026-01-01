@@ -6,6 +6,7 @@ import { errorToast, successToast } from '../../../utils/customToast';
 import { loginSuccess } from '../../../redux/feature/authSlice';
 import { useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ENDPOINT } from '../../../api/endpoints';
 
 interface Credentials {
   email: string;
@@ -43,21 +44,21 @@ const useLogin = () => {
     try {
       const response = await loginApi(
         {
-          url: 'login', // endpoint relative to BaseUrl
+          url: ENDPOINT.LOGIN, // endpoint relative to BaseUrl
           body: credentials,
         },
         setIsLoading
       );
-      console.log("response",response)
-       if (response?.success) {
-          dispatch(
-      loginSuccess({
-     userData: response.data,          // ✅ full user object
-      token: response.data.token,  
-      })
-    );
-await AsyncStorage.setItem('token', response.data.token);
-         successToast(response?.message || 'Login successful');
+      console.log("response", response)
+      if (response?.success) {
+        dispatch(
+          loginSuccess({
+            userData: response.data,          // ✅ full user object
+            token: response.data.token,
+          })
+        );
+        await AsyncStorage.setItem('token', response.data.token);
+        successToast(response?.message || 'Login successful');
         navigation.navigate(ScreenNameEnum.DrawerNavgation);
       } else {
         errorToast(response?.message || 'Login failed');

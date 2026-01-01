@@ -4,10 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { loginSuccess } from '../../../redux/feature/authSlice';
-import { getApi } from '../../../api/authApi/AuthApi';
+import { ENDPOINT } from '../../../api/endpoints';
+import { GET_API } from '../../../api/APIRequest';
 
 const useDashboard = () => {
-  const navigation = useNavigation();
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(false);
@@ -28,16 +28,16 @@ const useDashboard = () => {
         return;
       }
 
-      const response = await getApi(
-        'get-profile',   // endpoint
-     // loader
+      const response = await GET_API(
+        ENDPOINT.GET_PROFILE,   // endpoint
+        // loader
         token,           // token
         'POST'           // method
       );
 
- 
+
       if (response?.success) {
-            setLoading(false)
+        setLoading(false)
 
         dispatch(
           loginSuccess({
@@ -47,7 +47,7 @@ const useDashboard = () => {
         );
       }
     } catch (error) {
-          setLoading(true)
+      setLoading(true)
 
       console.log('❌ Profile API error:', error);
     }

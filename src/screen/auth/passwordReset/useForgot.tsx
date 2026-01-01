@@ -3,6 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import { ApiCall, } from '../../../api/authApi/AuthApi';
 import { errorToast } from '../../../utils/customToast';
 import ScreenNameEnum from '../../../routes/screenName.enum';
+import { ENDPOINT } from '../../../api/endpoints';
 
 interface Credentials {
   email: string;
@@ -44,7 +45,7 @@ const useForgot = () => {
       return;
     }
     try {
-      let endPonit ="forgotPassword"
+      let endPonit =ENDPOINT.FORGOT_PASSWORD
       const params :any = { email , };
       const response = await ApiCall(endPonit,params, setIsLoading);
       if (response.success) {

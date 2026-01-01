@@ -5,6 +5,7 @@ enum ScreenNameEnum {
   Login = "Login",
   CreateNewPassword = "CreateNewPassword",
   HomeStack="HomeStack",
+  ABOUT_US='AboutUs',
   SecuritySetupScreen="SecuritySetupScreen",
   AppointmentScreen="AppointmentScreen",
   FaceLockcomplete = "FaceLockcomplete",

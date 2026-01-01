@@ -2,10 +2,8 @@
  import NotificationsScreen from "../screen/Notification/Notification";
  import HelpScreen from "../screen/Profile/Help/Helps";
 import Splash from "../screen/auth/Splash/Splash";
-import OtpScreen from "../screen/auth/OTPScreen/OtpScreen";
- import LegalPoliciesScreen from "../screen/Profile/LegalPoliciesScreen";
-import PrivacyPolicy from "../screen/Profile/PrivacyPolicy";
-import OrdersPrfile from "../screen/Profile/OrdersPrfile/OrdersPrfile";
+import OtpScreen from "../screen/auth/OTPScreen/OtpScreen"; 
+import PrivacyPolicy from "../screen/Profile/PrivacyPolicy"; 
 import Login from "../screen/auth/login/Login";
  import FaceLockcomplete from "../screen/FaceLockEnabledScreen/FaceLockEnabledScreen";
   import CreateNewInvoice from "../screen/CreateNewInvoice/CreateNewInvoice";
@@ -16,6 +14,8 @@ import ClickUploadScreen from "../screen/BottomTab/CameraUpload/ClickUploadScree
 import PasswordReset from "../screen/auth/passwordReset/PasswordReset";
 import CreateNewPassword from "../screen/auth/createNewPassword/CreateNewPassword";
 import DrawerNavigation from "../navigators/DrawerNavigation";
+import AboutUs from "../screen/Profile/About";
+import TearmsCodition from "../screen/Profile/TearmsCodition";
 const _routes: any = {
   REGISTRATION_ROUTE: [
     {
@@ -55,12 +55,7 @@ const _routes: any = {
       Component: FaceLockcomplete,
     },
  
-
-
-    {
-      name: ScreenNameEnum.OrdersPrfile,
-      Component: OrdersPrfile,
-    },
+ 
 
 
     {
@@ -74,6 +69,10 @@ const _routes: any = {
     {
       name: ScreenNameEnum.Help,
       Component: HelpScreen,
+    },
+    {
+      name: ScreenNameEnum.ABOUT_US,
+      Component: AboutUs,
     },
     {
       name: ScreenNameEnum.EditProfile,
@@ -98,12 +97,8 @@ const _routes: any = {
     },
     {
       name: ScreenNameEnum.LegalPoliciesScreen,
-      Component: LegalPoliciesScreen,
+      Component: TearmsCodition,
     },
-
-
- 
-
 
     {
       name: ScreenNameEnum.NotificationsScreen,

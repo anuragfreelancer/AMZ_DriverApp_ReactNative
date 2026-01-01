@@ -12,13 +12,14 @@ import HTML from 'react-native-render-html';
 
 import imageIndex from '../../assets/imageIndex';
 import StatusBarComponent from '../../compoent/StatusBarCompoent';
-import CustomHeader from '../../compoent/CustomHeader';
-import LoadingModal from '../../utils/Loader';
+import CustomHeader from '../../compoent/CustomHeader'; 
 import { hp } from '../../utils/Constant';
-import font from '../../theme/font';
-import { Termsconditions } from '../../api/authApi/AuthApi';
-  
-const LegalPoliciesScreen = () => {
+import font from '../../theme/font'; 
+import { GET_API } from '../../api/APIRequest';
+import { ENDPOINT } from '../../api/endpoints';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+ 
+const AboutUs = () => {
   const [isLoading, setLoading] = useState(false);
   const [content, setContent] = useState<string>('');
   const { width } = useWindowDimensions();
@@ -29,15 +30,16 @@ const LegalPoliciesScreen = () => {
 
   const getPrivacyPolicy = async () => {
     try {
-      const response = await Termsconditions(setLoading);
+       const token = await AsyncStorage.getItem('token');
 
+      const response = await GET_API(ENDPOINT.ABOUT_US, token,"GET",setLoading);
+console.log("response?.data",response?.data)
       if (
         response?.data &&
         Array.isArray(response.data) &&
         response.data.length > 0
       ) {
-        console.log("response.data",response.data)
-        setContent(response.data[0]?.tac_text || '');
+        setContent(response.data[0]?.about_us_text || '');
       } else {
         setContent('<p>No content available</p>');
       }
@@ -50,9 +52,9 @@ const LegalPoliciesScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBarComponent />
-      <LoadingModal visible={isLoading} />
+      {/* <LoadingModal visible={isLoading} /> */}
 
-      <CustomHeader label="Terms and Condition" />
+      <CustomHeader label="About Us" />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -60,7 +62,7 @@ const LegalPoliciesScreen = () => {
       >
         <View style={styles.illustrationWrapper}>
           <Image
-            source={imageIndex.helpPrva}
+            source={imageIndex.aboutus}
             style={styles.illustration}
             resizeMode="contain"
           />
@@ -73,14 +75,14 @@ const LegalPoliciesScreen = () => {
             tagsStyles={styles.htmlStyles}
           />
         ) : (
-          <Text style={styles.bodyText}>No privacy policy available.</Text>
+          <Text style={styles.bodyText}>No About Us available.</Text>
         )}
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-export default LegalPoliciesScreen;
+export default AboutUs;
 const styles = StyleSheet.create({
   container: {
     flex: 1,

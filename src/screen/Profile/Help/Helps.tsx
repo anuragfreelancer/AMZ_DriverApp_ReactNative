@@ -8,6 +8,8 @@ import LoadingModal from "../../../utils/Loader";
 import CustomHeader from "../../../compoent/CustomHeader";
 import imageIndex from "../../../assets/imageIndex";
 import CustomButton from "../../../compoent/CustomButton";
+import { POST_API } from "../../../api/APIRequest";
+import { ENDPOINT } from "../../../api/endpoints";
 
 const HelpSupportScreen = () => {
   const navigation = useNavigation();
@@ -17,16 +19,26 @@ const HelpSupportScreen = () => {
 
   const handleSubmit = async () => {
     if (!SupportHelp) {
-      navigation.goBack();
+      // navigation.goBack();
     } else {
-      // try {
-      //   const response = await Support_Api(
-      //     SupportHelp,
-      //     setLoading,
-      //     isLogin?.userData?.id,
-      //     navigation
-      //   );
-      // } catch (error) {}
+      try {
+        console.log(isLogin?.user_data
+?.userData)
+        const body ={
+message:SupportHelp,
+user_id:isLogin?.userData?.user_data?.id
+        }
+        const response = await POST_API(
+          '',
+          body,
+          ENDPOINT.SUPPORT,
+          setLoading
+        );
+        if(response.success){
+          setSupportHelp('')
+          navigation.goBack()
+        }
+      } catch (error) {}
     }
   };
   return (

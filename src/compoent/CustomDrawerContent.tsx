@@ -19,6 +19,7 @@ import { color } from "../constant";
 
 // -------- Menu Data --------
 const menuItems = [
+  { id: "11", title: "Dashboard", icon: imageIndex.multiUser, screen: ScreenNameEnum.DashBoardScreen },
   { id: "1", title: "Profile", icon: imageIndex.profile, screen: ScreenNameEnum.EditProfile },
 
   { id: "2", title: "Video Record", icon: imageIndex.video, screen: ScreenNameEnum.ClickUploadScreen },
@@ -27,7 +28,7 @@ const menuItems = [
   { id: "5", title: "Change Password", icon: imageIndex.lock1, screen: ScreenNameEnum.changePassword },
   { id: "6", title: "Contact Us", icon: imageIndex.support, screen: ScreenNameEnum.Help },
   // { id: "7", title: "Feeding Log", icon: imageIndex.support, screen: ScreenNameEnum.HelpSupport },
-  { id: "8", title: "About us", icon: imageIndex.info, screen: ScreenNameEnum.PrivacyPolicy },
+  { id: "8", title: "About us", icon: imageIndex.info, screen: ScreenNameEnum.ABOUT_US },
   { id: "9", title: "Service Rules", icon: imageIndex.terms, screen: ScreenNameEnum.LegalPoliciesScreen },
   { id: "6", title: "Privacy Policy", icon: imageIndex.service, screen: ScreenNameEnum.PrivacyPolicy },
 
@@ -146,6 +147,7 @@ export default function CustomDrawerContent(props: DrawerContentComponentProps) 
       routes: [{ name: ScreenNameEnum.Login }],
     });
   };
+  console.log(isLogin)
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: "#fff" }}>
       <StatusBarComponent />
@@ -164,20 +166,20 @@ export default function CustomDrawerContent(props: DrawerContentComponentProps) 
             width: 80,
             borderRadius: 40
           }}
-          source={isLogin?.userData?.image ? { uri: isLogin?.userData?.image } : imageIndex.dummy} />
+          source={isLogin?.userData?.user_data?.image ? { uri: isLogin?.userData?.user_data?.image } : imageIndex.dummy} />
         <View>
           <Text style={{
             marginLeft: 15,
 
             color: "black",
             fontWeight: "600"
-          }}>{isLogin?.userData?.user_name || "Marcus Aminoff"}</Text>
+          }}>{isLogin?.userData?.user_data?.user_name || "Marcus Aminoff"}</Text>
           <Text style={{
             marginLeft: 15,
             marginTop: 5,
             color: "black",
             fontWeight: "600"
-          }}>{isLogin?.userData?.email || '@Marcus'}</Text>
+          }}>{isLogin?.userData?.user_data?.email || '@Marcus'}</Text>
         </View>
       </TouchableOpacity>
       <FlatList

@@ -10,7 +10,7 @@ export interface ApiRequest {
   redirect?:any
 }
 
-export const base_url = 'https://server-php-8-3.technorizen.com/car_dealership/api/';
+export const BASE_URL = 'https://server-php-8-3.technorizen.com/amz_pro/api/';
  export const GoogleClientId = '43208932533-6ktmlm2uusaqdgv42pj9u94eq9q6q8h7.apps.googleusercontent.com';
  
 export const callMultipleApis = async (requests: ApiRequest[]) => {
@@ -20,7 +20,7 @@ export const callMultipleApis = async (requests: ApiRequest[]) => {
  
         const config: AxiosRequestConfig = {
           method: req.method || 'GET',
-          url: `${base_url}${req.endpoint}`,
+          url: `${BASE_URL}${req.endpoint}`,
           data: (req.method === 'POST' || req.method === 'PUT') ? req.data : undefined,
           headers: {
             'Content-Type': req.data instanceof FormData ? 'multipart/form-data' : 'application/json',
