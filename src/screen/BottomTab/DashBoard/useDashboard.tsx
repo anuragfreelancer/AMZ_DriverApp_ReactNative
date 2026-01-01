@@ -19,8 +19,7 @@ const useDashboard = () => {
   }, []);
 
   const getProfileApi = async () => {
-    setLoading(true)
-    try {
+     try {
       const token = await AsyncStorage.getItem('token');
 
       if (!token) {
@@ -47,7 +46,7 @@ const useDashboard = () => {
         );
       }
     } catch (error) {
-      setLoading(true)
+      setLoading(false)
 
       console.log('❌ Profile API error:', error);
     }

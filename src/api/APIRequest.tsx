@@ -22,7 +22,8 @@ import { BASE_URL } from ".";
          ...(token && { Authorization: `Bearer ${token}` }),
        },
      });
- 
+      setLoading?.(false);
+
      return response.data;
    } catch (error: any) {
      console.error(

@@ -1,581 +1,435 @@
-import React, { useEffect, useState } from 'react';
+// SignUpUI.tsx
+import React, { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
-  Image,
-  ActivityIndicator,
-  StyleSheet,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  Modal,
+  TouchableWithoutFeedback,
+  FlatList,
 } from 'react-native';
-import { pickProfileImage } from './imagePicker';
- import { errorToast, successToast } from '../../../utils/customToast';
-import CustomHeader from '../../../compoent/CustomHeader';
-import StatusBarComponent from '../../../compoent/StatusBarCompoent';
 import { SafeAreaView } from 'react-native-safe-area-context';
+ import TextInputField from '../../../compoent/TextInputField';
 import CustomButton from '../../../compoent/CustomButton';
 import imageIndex from '../../../assets/imageIndex';
-import { useSelector } from 'react-redux';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import StatusBarComponent from '../../../compoent/StatusBarCompoent';
+import CustomHeader from '../../../compoent/CustomHeader';
+import { useNavigation } from '@react-navigation/native';
+import ScreenNameEnum from '../../../routes/screenName.enum';
+import LoadingModal from '../../../utils/Loader';
+import { color } from '../../../constant';
+ import Icon from 'react-native-vector-icons/MaterialIcons';
+import useProfileScreen from './useProfileScreen';
 
-// Import vector icons
- import { color } from '../../../constant';
-import TextInputField from '../../../compoent/TextInputField';
+export default function ProfileScreen() {
+  const navigation = useNavigation();
+   
+  const {
+    credentials,
+    errors,
+    isLoading,
+    termsAccepted,
  
-const ProfileScreen = () => {
-  const [loading, setLoading] = useState(false);
-  const [image, setImage] = useState<any>(null);
-  const auth = useSelector((state: any) => state.auth);
+    showLanguageModal,
+    usStates,
+    languages,
+    setTermsAccepted,
+    setShowDatePicker,
+    setShowStateModal,
+    setShowLanguageModal,
+    handleChange,
+    handleSignup,
+  } = useProfileScreen();
 
-  const [profile, setProfile] = useState({
-    user_name: '',
-    email: '',
-    image: '',
-  });
+ 
+  const renderError = (field: keyof typeof errors) => {
+    if (errors[field]) {
+      return <Text style={styles.errorText}>{errors[field]}</Text>;
+    }
+    return null;
+  };
 
-  // useEffect(() => {
-  //   init();
-  // }, []);
-
-  //  const renderError = (field: keyof typeof errors) => {
-  //     if (errors[field]) {
-  //       return <Text style={styles.errorText}>{errors[field]}</Text>;
-  //     }
-  //     return null;
-  //   };
+ 
  
 
-  if (loading) {
-    return (
-      <View style={styles.loader}>
-        <ActivityIndicator size="large" color="#6200ee" />
-        <Text style={styles.loadingText}>Loading Profile...</Text>
-      </View>
-    );
-  }
+  const renderLanguageItem = ({ item }: { item: string }) => (
+    <TouchableOpacity
+      style={styles.modalItem}
+      onPress={() => {
+        handleChange('language', item);
+        setShowLanguageModal(false);
+      }}
+    >
+      <Text style={styles.modalItemText}>{item}</Text>
+    </TouchableOpacity>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBarComponent />
-      <CustomHeader label={"Profile"} />
       
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      <CustomHeader 
+        menuIcon={imageIndex.back} 
+        leftPress={() => navigation.goBack()}  
+        showRight={false}
+      />
+      
+      <KeyboardAvoidingView
         style={styles.keyboardAvoid}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
-        <ScrollView 
+        <ScrollView
           showsVerticalScrollIndicator={false}
+          style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
-        > 
+        >
+          <LoadingModal visible={isLoading} />
+          
+          <View style={styles.formWrapper}>
+            <View style={styles.formContainer}>
+               <Text style={styles.sectionTitle}>Personal Information</Text>
 
-           <View style={styles.formContainer}>
-                      {/* Worker Fields */}
-                       <Text style={styles.sectionTitle}>Personal Information</Text>
-        
-                       <TextInputField
-                          placeholder="Name"
-                          // value={credentials.fullName}
-                          // onChangeText={(text) => handleChange('fullName', text)}
-                          firstLogo
-                          img={imageIndex.Textprofile}
-                          // error={errors.fullName}
-                        />
-                     
-                         <TextInputField
-                            placeholder="Driver License Number"
-                            // value={credentials.institutionName}
-                            // onChangeText={(text) => handleChange('institutionName', text)}
-                            firstLogo
-                            img={imageIndex.driver}
-                            // error={errors.institutionName}
-                          />
-                          {/* {renderError('institutionName')} */}
-        
-                          <TextInputField
-                            placeholder="Issued State"
-                            // value={credentials.unitName}
-                            // onChangeText={(text) => handleChange('unitName', text)}
-                            firstLogo
-                            img={imageIndex.global}
-                            // error={errors.unitName}
-                          />
-                          {/* {renderError('unitName')} */}
-        
-                          <TextInputField
-                            placeholder="Languagee"
-                            // value={credentials.unitManagerName}
-                            // onChangeText={(text) => handleChange('unitManagerName', text)}
-                            firstLogo
-                            img={imageIndex.language}
-                            // error={errors.unitManagerName}
-                          />
-                          {/* {renderError('unitManagerName')} */}
-                       <Text style={styles.sectionTitle}>Contact Details</Text>
-        
-                      {/* Common Fields */}
-                      <TextInputField
-                        placeholder="Email"
-                        // value={credentials.email}
-                        // onChangeText={(text) => handleChange('email', text)}
-                        firstLogo
-                        img={imageIndex.mess}
-                        keyboardType="email-address"
-                        autoCapitalize="none"
-                        // error={errors.email}
-                      />
-                      {/* {renderError('email')} */}
-        
-                      <TextInputField
-                        placeholder="Phone Number"
-                        // value={credentials.mobile}
-                        // onChangeText={(text) => handleChange('mobile', text)}
-                        firstLogo
-                        img={imageIndex.Textphone}
-                        keyboardType="phone-pad"
-                        // error={errors.mobile}
-                        maxLength={15}
-                      />
-                      {/* {renderError('mobile')} */}
-                       <Text style={styles.sectionTitle}>FMCSA Verification</Text>
-        
-        
-                    
-                    
-                   
-        
-                      {/* Address Field */}
-                      <TextInputField
-                        placeholder="DOT Number"
-                        // value={credentials.address}
-                        // onChangeText={(text) => handleChange('address', text)}
-                         
-                        // error={errors.address} 
-                      />
-                      {/* {renderError('address')} */}
-         <TextInputField
-                        placeholder="MC Number"
-                        // value={credentials.address}
-                        // onChangeText={(text) => handleChange('address', text)}
-                         
-                        // error={errors.address} 
-                      />
-                      {/* Worker Education Section */}
-                         <Text style={styles.sectionTitle}>Company Details</Text>
-        
-                          {/* Education Level Dropdown */}
-                          {/* <TouchableOpacity
-                            style={[styles.dropdown, errors.educationLevel && styles.errorBorder]}
-                            onPress={() => setDropdownVisible(true)}
-                          >
-                            <View style={styles.dropdownContent}>
-                              <Image
-                                source={imageIndex.Level}
-                                style={styles.dropdownIcon}
-                                tintColor={color.primary}
-                              />
-                              <Text style={[
-                                styles.dropdownText,
-                                !credentials.educationLevel && styles.placeholderText
-                              ]}>
-                                {credentials.educationLevel || 'Level of Education'}
-                              </Text>
-                            </View>
-                            <Image
-                              source={imageIndex.arrowqdown}
-                              style={styles.dropdownArrow}
-                              tintColor={color.primary}
-                            />
-                          </TouchableOpacity>
-                          {renderError('educationLevel')} */}
-        
-                          {/* Education Modal */}
-                          {/* <Modal
-                            visible={dropdownVisible}
-                            transparent
-                            animationType="fade"
-                          >
-                            <TouchableOpacity
-                              style={styles.modalOverlay}
-                              onPress={() => setDropdownVisible(false)}
-                            >
-                              <View style={styles.modalContent}>
-                                <FlatList
-                                  data={educationOptions}
-                                  keyExtractor={(item) => item}
-                                  renderItem={({ item }) => (
-                                    <TouchableOpacity
-                                      style={styles.modalItem}
-                                      onPress={() => handleSelectEducation(item)}
-                                    >
-                                      <Text style={styles.modalItemText}>{item}</Text>
-                                    </TouchableOpacity>
-                                  )}
-                                />
-                              </View>
-                            </TouchableOpacity>
-                          </Modal> */}
-        
-                          <TextInputField
-                            placeholder="Thompson Freight Logistics"
-                            // value={credentials.degree}
-                            // onChangeText={(text) => handleChange('degree', text)}
-                           
-                          />
-        
-                          <TextInputField
-                            placeholder="Authorized for Hire"
-                            // value={credentials.schoolName}
-                            // onChangeText={(text) => handleChange('schoolName', text)}
-                           
-                          />
-        
-                        </View>
-                      
-            <View style={styles.buttonContainer}>
-              <CustomButton
-                title="Edit"
-                // onPress={onUpdate}
-                style={styles.updateButton}
-                textStyle={styles.buttonText}
+              <TextInputField
+                placeholder="Full Name"
+                value={credentials.fullName}
+                onChangeText={(text) => handleChange('fullName', text)}
+                firstLogo
+                img={imageIndex.Textprofile}
+               />
+              {renderError('fullName')}
+
+              <TextInputField
+                placeholder="Driver License Number"
+                value={credentials.driverLicenseNumber}
+                onChangeText={(text) => handleChange('driverLicenseNumber', text)}
+                firstLogo
+                img={imageIndex.driver}
+                error={!!errors.driverLicenseNumber}
               />
-            </View> 
+              {renderError('driverLicenseNumber')}
+              <TextInputField
+                placeholder="issued State"
+                value={credentials.issuedState}
+                onChangeText={(text) => handleChange('issuedState', text)}
+                firstLogo
+                img={imageIndex.driver}
+                error={!!errors.issuedState}
+              />
+              {renderError('issuedState')}
 
-     
+              {/* Issued State Dropdown */}
+ 
+              {/* Date Picker */}
+              
+
+              {/* Language Dropdown */} 
+              <Text style={{
+                color:"black" ,
+              
+                marginBottom:10,
+                marginTop:19 ,
+                fontWeight:"500"
+              }}>Language</Text>
+              <TouchableOpacity
+                style={[
+                  styles.dropdownContainer,
+                  errors.language && styles.dropdownError
+                ]}
+                onPress={() => setShowLanguageModal(true)}
+              >
+                <View style={styles.dropdownInner}>
+                  {credentials.language ? (
+                    <Text style={styles.dropdownText}>{credentials.language}</Text>
+                  ) : (
+                    <Text style={styles.dropdownPlaceholder}>Language</Text>
+                  )}
+                  <Icon name="keyboard-arrow-down" size={24} color="#666" />
+                </View>
+              </TouchableOpacity>
+              {renderError('language')}
+
+              {/* Contact Details Section */}
+              <Text style={styles.sectionTitle}>Contact Details</Text>
+ 
+
+              <TextInputField
+                placeholder="Phone Number"
+                value={credentials.mobile}
+                onChangeText={(text) => handleChange('mobile', text)}
+                firstLogo
+                img={imageIndex.Textphone}
+                keyboardType="phone-pad"
+                error={!!errors.mobile}
+                maxLength={15}
+              />
+              {renderError('mobile')}
+
+              {/* FMCSA Verification Section */}
+              <Text style={styles.sectionTitle}>FMCSA Verification</Text>
+              
+              <TextInputField
+                placeholder="DOT Number"
+                value={credentials.dotNumber}
+                onChangeText={(text) => handleChange('dotNumber', text)}
+                firstLogo={false}
+                error={!!errors.dotNumber}
+              />
+              {renderError('dotNumber')}
+
+              <TextInputField
+                placeholder="MC Number"
+                value={credentials.mcNumber}
+                onChangeText={(text) => handleChange('mcNumber', text)}
+                firstLogo={false}
+                error={!!errors.mcNumber}
+              />
+              {renderError('mcNumber')}
+
+              {/* Company Details Section */}
+              <Text style={styles.sectionTitle}>Company Details</Text>
+              
+              <TextInputField
+                placeholder="Thompson Freight Logistics LLC"
+                firstLogo={false}
+                value={credentials.companyName}
+                onChangeText={(text) => handleChange('companyName', text)}
+                error={!!errors.companyName}
+              />
+              {renderError('companyName')}
+ 
+            </View>
+
+            {/* Submit Button */}
+            <CustomButton
+              title="Save"
+              onPress={handleSignup}
+            />
+          </View>
+
+         
         </ScrollView>
       </KeyboardAvoidingView>
+
+    
+
+      {/* State Selection Modal */}
+   
+
+      {/* Language Selection Modal */}
+      <Modal
+        visible={showLanguageModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowLanguageModal(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setShowLanguageModal(false)}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>Select Language</Text>
+                <TouchableOpacity onPress={() => setShowLanguageModal(false)}>
+                  <Icon name="close" size={24} color="#333" />
+                </TouchableOpacity>
+              </View>
+              <FlatList
+                data={languages}
+                renderItem={renderLanguageItem}
+                keyExtractor={(item) => item}
+                showsVerticalScrollIndicator={false}
+              />
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </SafeAreaView>
   );
-};
-
-export default ProfileScreen;
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#fff',
   },
   keyboardAvoid: {
     flex: 1,
   },
+  scrollView: {
+    flex: 1,
+  },
   scrollContent: {
-    paddingHorizontal: 20,
+    flexGrow: 1,
     paddingBottom: 30,
   },
-  loader: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f8f9fa',
+  formWrapper: {
+    backgroundColor: '#FFF',
+    marginHorizontal: 20,
+     shadowOffset: { width: 0, height: 2 },
+  
   },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 16,
-    color: '#666',
-    fontFamily: 'System',
-  },
-  profileImageContainer: {
-    alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 10,
-  },
-  imageWrapper: {
-    position: 'relative',
-    marginBottom: 12,
-  },
-  avatar: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    backgroundColor: '#e9ecef',
-    borderWidth: 4,
-    borderColor: '#fff',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 5,
-  },
-  cameraBadge: {
-    position: 'absolute',
-    bottom: 8,
-    right: 8,
-    backgroundColor: '#6200ee',
-    width: 44,
+  logo: {
     height: 44,
-    borderRadius: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 3,
-    borderColor: '#fff',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  username: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#333',
-    marginTop: 8,
-    fontFamily: 'System',
-  },
-  userEmail: {
-    fontSize: 16,
-    color: '#666',
-    marginTop: 4,
-    fontFamily: 'System',
+    width: 120,
+    alignSelf: 'center',
   },
   title: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#333',
-    marginVertical: 20,
-    fontFamily: 'System',
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 24,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 3,
-    borderWidth: 1,
-    borderColor: '#f0f0f0',
-  },
-  inputContainer: {
-    marginBottom: 24,
-  },
-  labelContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  inputIcon: {
-    marginRight: 8,
-  },
-  label: {
-    fontSize: 15,
-    color: '#555',
+    fontSize: 22,
     fontWeight: '600',
-    fontFamily: 'System',
+    textAlign: 'center',
+    marginBottom: 5,
+    marginTop: 18,
+    color: "black"
   },
-  input: {
-    borderWidth: 1.5,
-    borderColor: '#e0e0e0',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+  subtitle: {
     fontSize: 16,
-    color: '#333',
-    backgroundColor: '#fafafa',
-    fontFamily: 'System',
-  },
-  buttonContainer: {
+    color: '#9DB2BF',
+    textAlign: 'center',
+    marginBottom: 20,
     marginTop: 10,
   },
-  updateButton: {
-    backgroundColor: '#6200ee',
-    borderRadius: 12,
-    paddingVertical: 16,
-    shadowColor: '#6200ee',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
+  formContainer: {
+    marginBottom: 20,
   },
-  buttonText: {
-    fontSize: 17,
-    fontWeight: '600',
-    fontFamily: 'System',
+  sectionTitle: {
+    color: "black",
+    fontSize: 18,
+    fontWeight: "600",
+    marginTop: 15,
+    marginBottom: 10,
+    marginLeft: 5,
   },
-  infoCard: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 20,
+  dropdownContainer: {
     borderWidth: 1,
-    borderColor: '#f0f0f0',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    borderColor: '#F7F8F8',
+    borderRadius: 8,
+    marginBottom: 10,
+    paddingHorizontal: 15,
+    height: 50,
+    justifyContent: 'center',
+    backgroundColor: '#F7F8F8',
   },
-  infoItem: {
+  dropdownError: {
+    borderColor: '#FF3B30',
+  },
+  dropdownInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  dropdownText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  dropdownPlaceholder: {
+    fontSize: 16,
+    color: '#9E9E9E',
+  },
+  checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
+    marginVertical: 15,
+    paddingHorizontal: 5,
   },
-  infoTextContainer: {
+  checkboxOuter: {
+    width: 22,
+    height: 22,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: color.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
+    marginTop: 2,
+  },
+  checkboxInner: {
+    width: 14,
+    height: 14,
+    borderRadius: 2,
+    backgroundColor: color.primary,
+  },
+  checkboxLabel: {
+    fontSize: 14,
+    color: '#333',
     flex: 1,
-    marginLeft: 12,
+    lineHeight: 20,
   },
-  infoTitle: {
+  signUpContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 30,
+    paddingHorizontal: 20,
+  },
+  signUpText: {
     fontSize: 16,
+    color: '#909090',
+    fontWeight: '500'
+  },
+  signUpLink: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: color.primary
+  },
+  errorText: {
+    color: '#FF3B30',
+    fontSize: 14,
+    marginTop: -5,
+    marginBottom: 10,
+    marginLeft: 10,
+  },
+  checkboxError: {
+    borderColor: '#FF3B30',
+  },
+  generalError: {
+    backgroundColor: '#FFE5E5',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 15,
+    borderLeftWidth: 4,
+    borderLeftColor: '#FF3B30',
+  },
+  generalErrorText: {
+    color: '#D32F2F',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '60%',
+    paddingBottom: 20,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  modalTitle: {
+    fontSize: 18,
     fontWeight: '600',
     color: '#333',
-    marginBottom: 4,
-    fontFamily: 'System',
   },
-  infoDescription: {
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 20,
-    fontFamily: 'System',
+  modalItem: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F5F5F5',
   },
-
-
-
-
-
-    formContainer: {
-      marginBottom: 20,
-    },
-    sectionTitle: {
-      color: "black",
-      fontSize: 18,
-      fontWeight: "600",
-      marginTop: 8,
-      marginBottom: 10
-    },
-    dropdown: {
-      borderWidth: 1,
-      backgroundColor: '#F7F8F8',
-      borderColor: '#F7F8F8',
-      padding: 15,
-      borderRadius: 12,
-      marginVertical: 10,
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-    },
-    dropdownContent: {
-      flexDirection: "row",
-      alignItems: "center",
-    },
-    dropdownIcon: {
-      height: 20,
-      width: 20,
-    },
-    dropdownText: {
-      marginLeft: 8,
-      fontSize: 16,
-    },
-    placeholderText: {
-      color: '#999',
-    },
-    dropdownArrow: {
-      tintColor: "black",
-      height: 20,
-      width: 20,
-    },
-    modalOverlay: {
-      flex: 1,
-      backgroundColor: 'rgba(0,0,0,0.3)',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    modalContent: {
-      backgroundColor: '#fff',
-      width: '80%',
-      borderRadius: 10,
-      maxHeight: '50%',
-    },
-    modalItem: {
-      padding: 15,
-      borderBottomWidth: 1,
-      borderColor: '#eee',
-    },
-    modalItemText: {
-      fontSize: 16,
-    },
-    checkboxContainer: {
-      flexDirection: 'row',
-      alignItems: 'flex-start',
-      marginVertical: 15,
-    },
-    checkboxOuter: {
-      width: 20,
-      height: 20,
-      borderRadius: 10,
-      borderWidth: 2,
-      borderColor: color.primary,
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginRight: 10,
-      marginTop: 2,
-    },
-    checkboxInner: {
-      width: 12,
-      height: 12,
-      borderRadius: 6,
-      backgroundColor: color.primary,
-    },
-    checkboxLabel: {
-      fontSize: 14,
-      color: '#333',
-      flex: 1,
-      lineHeight: 20,
-    },
-    signUpContainer: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      marginBottom: 30,
-    },
-    signUpText: {
-      fontSize: 17,
-      color: '#909090',
-      fontWeight: '500'
-    },
-    signUpLink: {
-      fontSize: 17,
-      fontWeight: '700',
-      color: color.primary
-    },
-    errorText: {
-      color: '#FF3B30',
-      fontSize: 14,
-      marginTop: -8,
-      marginBottom: 10,
-      marginLeft: 5,
-    },
-    errorBorder: {
-      borderColor: '#FF3B30',
-      borderWidth: 1,
-    },
-    checkboxError: {
-      borderColor: '#FF3B30',
-    },
-    generalError: {
-      backgroundColor: '#FFE5E5',
-      padding: 12,
-      borderRadius: 8,
-      marginBottom: 15,
-      borderLeftWidth: 4,
-      borderLeftColor: '#FF3B30',
-    },
-    generalErrorText: {
-      color: '#D32F2F',
-      fontSize: 14,
-      fontWeight: '500',
-    },
+  modalItemText: {
+    fontSize: 16,
+    color: '#333',
+  },
 });

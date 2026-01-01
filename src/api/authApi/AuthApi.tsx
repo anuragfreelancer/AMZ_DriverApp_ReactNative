@@ -82,6 +82,27 @@ export const signupApi = async (
     return { success: false, message: error.message || 'Signup failed' };
   }
 };
+
+
+export const UpdteProfileApi = async (
+  body: any,
+  setLoading: (loading: boolean) => void
+): Promise<ApiResponse> => {
+  try {
+    const response = await loginApi({ url: ENDPOINT.UPDATE_PROFILE, body }, setLoading);
+
+    if (response.success) {
+      successToast('Signup successful!');
+    } else {
+      errorToast(response.message || 'Signup failed');
+    }
+
+    return response;
+  } catch (error: any) {
+    errorToast(error.message || 'Signup failed');
+    return { success: false, message: error.message || 'Signup failed' };
+  }
+};
 export const ApiCall = async (
   endPonit:any,
   body: any,
